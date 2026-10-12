@@ -11,9 +11,9 @@
   --text-sidebar-muted: #8CA0B3;
 
   --bg-body: #0E1622;
-  --bg-card: #152232;
-  --bg-card-hover: #1A2A3E;
-  --border-color: #24354A;
+  --bg-card: rgba(21, 34, 50, 0.75);
+  --bg-card-hover: rgba(26, 42, 62, 0.88);
+  --border-color: rgba(255, 255, 255, 0.08);
   --border-subtle: #1C2B3C;
 
   --text-main: #F1EDE7;
@@ -465,6 +465,8 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Buttons */
@@ -1246,8 +1248,8 @@ body {
 /* Favorite Book Spotlight Card */
 .favorite-book-card {
   margin-bottom: 24px;
-  background: #152335;
-  border: 1px solid #25374E;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 24px 28px;
 }
@@ -1330,6 +1332,30 @@ body {
   color: #B2C0D0;
   line-height: 1.5;
   margin-bottom: 12px;
+}
+
+.favorite-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.btn-link-action {
+  background: none;
+  border: none;
+  color: var(--accent-gold);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.15s ease;
+}
+
+.btn-link-action:hover {
+  color: #EAC875;
 }
 
 /* Image Upload in Add Book */

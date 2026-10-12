@@ -105,10 +105,6 @@
             <span class="sep">/</span> <span class="current">Home</span>
           </div>
         </div>
-        <div class="user-greeting">
-          <span>Good reading, today.</span>
-          <div class="avatar" title="Lilian">L</div>
-        </div>
       </header>
 
       <!-- ===============================================================
@@ -117,7 +113,6 @@
       <section class="view-section active" id="view-home">
         <!-- Hero Welcome Card -->
         <div class="home-hero-card">
-          <div class="header-tag">YOUR READING SANCTUM</div>
           <h1 class="header-title" style="margin-bottom: 10px;">A Quiet Space for Every Book You Read</h1>
           <p class="home-hero-desc">
             A quiet, organized place where you can keep track of every book you read, capture your reflections, monitor reading goals, and curate your personal collection without distractions.
@@ -176,12 +171,6 @@
 
 
         </div>
-
-        <!-- Classic Reading Reflection -->
-        <div class="home-quote-box">
-          <p class="quote-text">&ldquo;A reader lives a thousand lives before he dies. The man who never reads lives only one.&rdquo;</p>
-          <span class="quote-source">&mdash; George R.R. Martin</span>
-        </div>
       </section>
 
       <!-- ===============================================================
@@ -189,11 +178,7 @@
            =============================================================== -->
       <section class="view-section" id="view-dashboard">
         <div class="view-header">
-          <div>
-            <div class="header-tag">YOUR READING SPACE</div>
-            <h1 class="header-title">Dashboard</h1>
-            <p class="header-subtitle">A calm place to keep track of what you are reading.</p>
-          </div>
+          <h1 class="header-title">Dashboard</h1>
           <button type="button" class="btn btn-primary btn-go-add">+ Add book</button>
         </div>
 
@@ -209,7 +194,7 @@
           <div class="goal-footer" id="goal-status-text">2% complete • 49 remaining</div>
         </div>
 
-        <!-- 4 Essential Stat Cards Organized in One Clean Row (No colored accent lines) -->
+        <!-- 4 Essential Stat Cards Organized in One Clean Row -->
         <div class="stats-row stats-row-4">
           <div class="card stat-card">
             <span class="stat-label">Current Read</span>
@@ -229,24 +214,7 @@
           </div>
         </div>
 
-        <!-- Search Bar Row -->
-        <div class="search-row">
-          <div class="search-input-wrap">
-            <input type="text" id="dash-search-input" class="search-input" placeholder="Search books...">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </div>
-          <label class="checkbox-label">
-            <input type="checkbox" id="dash-regex-check"> Regex filter
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="dash-case-check"> Case sensitive
-          </label>
-        </div>
-
-        <!-- Favorite Book Spotlight Card -->
+        <!-- Favorite / Popular Spotlight Card -->
         <div class="card favorite-book-card" id="favorite-book-card">
           <div class="favorite-card-badge">FAVORITE READ</div>
           <div class="favorite-card-content">
@@ -261,18 +229,11 @@
               <p class="favorite-book-quote" id="favorite-book-quote">
                 &ldquo;Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived.&rdquo;
               </p>
-              <div class="favorite-card-status">
+              <div class="favorite-card-actions">
                 <span class="status-pill status-pill-reading" id="favorite-book-badge">Currently Reading</span>
+                <button type="button" class="btn-link-action" id="fav-view-library-btn">View in Library &rarr;</button>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Book Collection Section (Full Width) -->
-        <div class="collection-section">
-          <h3 class="collection-heading" id="collection-heading">My Book Collection (1)</h3>
-          <div class="book-grid" id="dashboard-book-grid">
-            <!-- Dynamically populated via app.js -->
           </div>
         </div>
       </section>

@@ -269,6 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Favorite spotlight card view in library button
+  const favViewBtn = document.getElementById('fav-view-library-btn');
+  if (favViewBtn) {
+    favViewBtn.addEventListener('click', () => {
+      switchView('catalog');
+    });
+  }
+
   // --- 4. Toast Notifications ---
   function showToast(message) {
     if (!toast) return;
