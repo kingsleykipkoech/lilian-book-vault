@@ -21,10 +21,7 @@
     <div class="drawer-backdrop" id="drawer-backdrop"></div>
     <aside class="nav-drawer" id="nav-drawer" aria-label="Quick Navigation">
       <div class="drawer-top">
-        <div class="brand">
-          <div class="brand-icon">✦</div>
-          <span class="brand-title">Book & Notes Vault</span>
-        </div>
+        <span class="brand-title">Book & Notes Vault</span>
         <button type="button" class="drawer-close" id="drawer-close-btn" aria-label="Close menu">
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -102,7 +99,6 @@
             <span class="bar"></span>
           </button>
           <div class="brand">
-            <div class="brand-icon">✦</div>
             <span class="brand-title">Book & Notes Vault</span>
           </div>
           <div class="breadcrumbs" id="breadcrumb-text">
@@ -121,8 +117,8 @@
       <section class="view-section active" id="view-home">
         <!-- Hero Welcome Card -->
         <div class="home-hero-card">
-          <div class="header-tag">YOUR PERSONAL READING SANCTUM</div>
-          <h1 class="header-title" style="margin-bottom: 10px;">Welcome to Book & Notes Vault</h1>
+          <div class="header-tag">YOUR READING SANCTUM</div>
+          <h1 class="header-title" style="margin-bottom: 10px;">A Quiet Space for Every Book You Read</h1>
           <p class="home-hero-desc">
             A quiet, organized place where you can keep track of every book you read, capture your reflections, monitor reading goals, and curate your personal collection without distractions.
           </p>
@@ -250,45 +246,33 @@
           </label>
         </div>
 
-        <!-- Split Grid: Filters Sidebar + Collection Grid -->
-        <div class="dashboard-split">
-          <!-- Filter Panel -->
-          <aside class="filter-panel">
-            <h3 class="filter-panel-title">Filter By</h3>
-
-            <div class="filter-group">
-              <span class="filter-group-heading">Genres</span>
-              <label class="checkbox-label">
-                <input type="checkbox" class="filter-genre-checkbox" value="Fiction"> Fiction
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="filter-genre-checkbox" value="Sci-Fi"> Sci-Fi
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="filter-genre-checkbox" value="Memoir"> Memoir
-              </label>
+        <!-- Favorite Book Spotlight Card -->
+        <div class="card favorite-book-card" id="favorite-book-card">
+          <div class="favorite-card-badge">FAVORITE READ</div>
+          <div class="favorite-card-content">
+            <div class="favorite-cover-preview" id="favorite-cover-preview">
+              <div class="favorite-cloth-cover">
+                <span>FAVORITE</span>
+              </div>
             </div>
-
-            <div class="filter-group" style="margin-top: 18px;">
-              <span class="filter-group-heading">Status</span>
-              <label class="checkbox-label">
-                <input type="checkbox" class="filter-status-checkbox" value="Reading"> Reading
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="filter-status-checkbox" value="Read"> Read
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="filter-status-checkbox" value="To Read"> To Read
-              </label>
+            <div class="favorite-card-details">
+              <h2 class="favorite-book-title" id="favorite-book-title">The Midnight Library</h2>
+              <div class="favorite-book-meta" id="favorite-book-author">by Matt Haig • 288 pages • Fiction</div>
+              <p class="favorite-book-quote" id="favorite-book-quote">
+                &ldquo;Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived.&rdquo;
+              </p>
+              <div class="favorite-card-status">
+                <span class="status-pill status-pill-reading" id="favorite-book-badge">Currently Reading</span>
+              </div>
             </div>
-          </aside>
+          </div>
+        </div>
 
-          <!-- Books Collection Area -->
-          <div class="collection-area">
-            <h3 class="collection-heading" id="collection-heading">My Book Collection (1)</h3>
-            <div class="book-grid" id="dashboard-book-grid">
-              <!-- Dynamically populated via app.js -->
-            </div>
+        <!-- Book Collection Section (Full Width) -->
+        <div class="collection-section">
+          <h3 class="collection-heading" id="collection-heading">My Book Collection (1)</h3>
+          <div class="book-grid" id="dashboard-book-grid">
+            <!-- Dynamically populated via app.js -->
           </div>
         </div>
       </section>
@@ -429,6 +413,23 @@
                   <option value="Reading">Reading</option>
                   <option value="Read">Read</option>
                 </select>
+              </div>
+              <div class="form-field form-field-full">
+                <label class="form-label">Book Cover Image (Upload)</label>
+                <div class="cover-upload-box">
+                  <input type="file" id="form-cover-file" class="form-file-input" accept="image/*">
+                  <div class="cover-upload-info">Upload a cover image from your computer or phone</div>
+                  <div class="cover-preview-row" id="cover-preview-row" style="display: none;">
+                    <img id="cover-preview-img" src="" alt="Cover Preview" class="cover-thumb">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-remove-cover">Remove Image</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-field form-field-full" style="margin-top: 4px;">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="form-is-favorite"> Mark as Favorite Book
+                </label>
               </div>
             </div>
 

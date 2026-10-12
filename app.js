@@ -82,6 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const formDate = document.getElementById('form-date');
   const formStatus = document.getElementById('form-status');
   const btnCancelForm = document.getElementById('btn-cancel-form');
+  const formCoverFile = document.getElementById('form-cover-file');
+  const coverPreviewRow = document.getElementById('cover-preview-row');
+  const coverPreviewImg = document.getElementById('cover-preview-img');
+  const btnRemoveCover = document.getElementById('btn-remove-cover');
+  const formIsFavorite = document.getElementById('form-is-favorite');
+  let currentUploadedCover = '';
 
   // Settings elements
   const settingsForm = document.getElementById('settings-form');
@@ -95,6 +101,32 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formDate) {
     const today = new Date().toISOString().split('T')[0];
     formDate.value = today;
+  }
+
+  
+  // Cover image upload listener
+  if (formCoverFile) {
+    formCoverFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (loadEvent) => {
+          currentUploadedCover = loadEvent.target.result;
+          if (coverPreviewImg) coverPreviewImg.src = currentUploadedCover;
+          if (coverPreviewRow) coverPreviewRow.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (btnRemoveCover) {
+    btnRemoveCover.addEventListener('click', () => {
+      currentUploadedCover = '';
+      if (formCoverFile) formCoverFile.value = '';
+      if (coverPreviewImg) coverPreviewImg.src = '';
+      if (coverPreviewRow) coverPreviewRow.style.display = 'none';
+    });
   }
 
   // --- Hamburger Drawer Helpers ---
@@ -272,8 +304,40 @@ document.addEventListener('DOMContentLoaded', () => {
     return text.includes(query);
   }
 
+  
+  // Favorite Book Spotlight Render
+  function renderFavoriteBook() {
+    const favCard = document.getElementById('favorite-book-card');
+    if (!favCard) return;
+
+    const favBook = books.find(b => b.isFavorite) || books.find(b => b.status === 'Reading') || books[0];
+    if (!favBook) {
+      favCard.style.display = 'none';
+      return;
+    }
+    favCard.style.display = 'block';
+
+    const favTitle = document.getElementById('favorite-book-title');
+    const favMeta = document.getElementById('favorite-book-author');
+    const favBadge = document.getElementById('favorite-book-badge');
+    const favCoverPreview = document.getElementById('favorite-cover-preview');
+
+    if (favTitle) favTitle.textContent = favBook.title;
+    if (favMeta) favMeta.textContent = `by ${favBook.author} • ${favBook.pages} pages • ${favBook.tag || 'General'}`;
+    if (favBadge) favBadge.textContent = favBook.status === 'Reading' ? 'Currently Reading' : favBook.status === 'Read' ? 'Finished Read' : 'To Read';
+
+    if (favCoverPreview) {
+      if (favBook.coverImage) {
+        favCoverPreview.innerHTML = `<img src="${favBook.coverImage}" class="favorite-cover-img" alt="${escapeHtml(favBook.title)}">`;
+      } else {
+        favCoverPreview.innerHTML = `<div class="favorite-cloth-cover"><span>FAVORITE</span></div>`;
+      }
+    }
+  }
+
   // --- 7. Dashboard Render ---
   function renderDashboard() {
+    renderFavoriteBook();
     // Reading Goal Stats
     const totalBooks = books.length;
     const completedReads = books.filter(b => b.status === 'Read').length;
@@ -359,11 +423,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const statusClass = book.status === 'Reading' ? 'reading' :
                           book.status === 'Read' ? 'read' : 'to-read';
 
+      const coverMarkup = book.coverImage
+        ? `<div class="book-cover-image-wrap"><img src="${book.coverImage}" class="book-cover-img" alt="${escapeHtml(book.title)}"></div>`
+        : `<div class="book-cover-placeholder"><span>BOOK NOTES</span></div>`;
+
       return `
         <article class="book-card" data-id="${book.id}">
-          <div class="book-cover-placeholder">
-            <span>BOOK NOTES</span>
-          </div>
+          ${coverMarkup}
           <h4 class="book-card-title">${escapeHtml(book.title)}</h4>
           <p class="book-card-meta">${escapeHtml(book.author)} • ${book.pages} pages</p>
           <span class="status-pill ${statusClass}">${escapeHtml(book.status)}</span>
@@ -454,6 +520,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetBookForm() {
     if (!bookForm) return;
     bookForm.reset();
+    currentUploadedCover = '';
+    if (formCoverFile) formCoverFile.value = '';
+    if (coverPreviewImg) coverPreviewImg.src = '';
+    if (coverPreviewRow) coverPreviewRow.style.display = 'none';
+    if (formIsFavorite) formIsFavorite.checked = false;
     if (editingBookIdInput) editingBookIdInput.value = '';
     if (formViewTitle) formViewTitle.textContent = 'Add Book';
     if (formDate) formDate.value = new Date().toISOString().split('T')[0];
@@ -471,6 +542,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formTag) formTag.value = book.tag;
     if (formDate) formDate.value = book.date;
     if (formStatus) formStatus.value = book.status;
+    currentUploadedCover = book.coverImage || '';
+    if (currentUploadedCover && coverPreviewImg && coverPreviewRow) {
+      coverPreviewImg.src = currentUploadedCover;
+      coverPreviewRow.style.display = 'flex';
+    } else if (coverPreviewRow) {
+      coverPreviewRow.style.display = 'none';
+    }
+    if (formIsFavorite) formIsFavorite.checked = !!book.isFavorite;
 
     if (formViewTitle) formViewTitle.textContent = 'Edit Book';
     switchView('add-book');
@@ -511,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update existing book
         const index = books.findIndex(b => b.id === editId);
         if (index !== -1) {
-          books[index] = { ...books[index], title, author, pages, tag, date, status };
+          books[index] = { ...books[index], title, author, pages, tag, date, status, coverImage: currentUploadedCover, isFavorite: formIsFavorite ? formIsFavorite.checked : false };
           showToast(`Updated "${title}"`);
         }
       } else {
@@ -523,7 +602,9 @@ document.addEventListener('DOMContentLoaded', () => {
           pages,
           tag,
           date,
-          status
+          status,
+          coverImage: currentUploadedCover,
+          isFavorite: formIsFavorite ? formIsFavorite.checked : false
         };
         books.unshift(newBook);
         showToast(`Saved "${title}" to your vault`);
@@ -607,6 +688,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Initial Render ---
   renderDashboard();
   renderCatalog();
+
+  // Support direct hash navigation (e.g. #dashboard, #add-book, #catalog)
+  const initialHash = window.location.hash.replace('#', '');
+  if (initialHash && ['home', 'dashboard', 'catalog', 'add-book', 'settings'].includes(initialHash)) {
+    switchView(initialHash);
+  }
 });
 
 // Helper HTML escaping for safe injection
