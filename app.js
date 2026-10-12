@@ -277,6 +277,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Favorite spotlight quick toggle status
+  const favBadgeBtn = document.getElementById('favorite-book-badge');
+  if (favBadgeBtn) {
+    favBadgeBtn.addEventListener('click', () => {
+      const favBook = books.find(b => b.isFavorite) || books.find(b => b.status === 'Reading') || books[0];
+      if (favBook) {
+        toggleBookStatus(favBook.id);
+      }
+    });
+  }
+
   // --- 4. Toast Notifications ---
   function showToast(message) {
     if (!toast) return;
@@ -312,7 +323,34 @@ document.addEventListener('DOMContentLoaded', () => {
     return text.includes(query);
   }
 
-  
+  // Helper: Status CSS class
+  function getStatusClass(status) {
+    if (status === 'Reading') return 'reading';
+    if (status === 'Read') return 'read';
+    return 'to-read';
+  }
+
+  // Helper: Toggle / Cycle book status (To Read -> Reading -> Read -> To Read)
+  function toggleBookStatus(id) {
+    const book = books.find(b => b.id === id);
+    if (!book) return;
+
+    const cycle = {
+      'To Read': 'Reading',
+      'Reading': 'Read',
+      'Read': 'To Read'
+    };
+    const currentStatus = book.status || 'To Read';
+    const newStatus = cycle[currentStatus] || 'Reading';
+    book.status = newStatus;
+    persistData();
+    renderCatalog();
+    renderDashboard();
+
+    const icon = newStatus === 'Read' ? '✅' : (newStatus === 'Reading' ? '📖' : '⏳');
+    showToast(`${icon} Status updated: "${book.title}" is now ${newStatus}`);
+  }
+
   // Favorite Book Spotlight Render
   function renderFavoriteBook() {
     const favCard = document.getElementById('favorite-book-card');
@@ -332,7 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (favTitle) favTitle.textContent = favBook.title;
     if (favMeta) favMeta.textContent = `by ${favBook.author} • ${favBook.pages} pages • ${favBook.tag || 'General'}`;
-    if (favBadge) favBadge.textContent = favBook.status === 'Reading' ? 'Currently Reading' : favBook.status === 'Read' ? 'Finished Read' : 'To Read';
+    if (favBadge) {
+      favBadge.textContent = favBook.status === 'Reading' ? 'Currently Reading' : favBook.status === 'Read' ? 'Finished Read' : 'To Read';
+      favBadge.className = `btn-toggle-status status-pill ${getStatusClass(favBook.status)}`;
+      favBadge.dataset.id = favBook.id;
+    }
 
     if (favCoverPreview) {
       if (favBook.coverImage) {
@@ -428,8 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     dashboardBookGrid.innerHTML = filtered.map(book => {
-      const statusClass = book.status === 'Reading' ? 'reading' :
-                          book.status === 'Read' ? 'read' : 'to-read';
+      const statusClass = getStatusClass(book.status);
 
       const coverMarkup = book.coverImage
         ? `<div class="book-cover-image-wrap"><img src="${book.coverImage}" class="book-cover-img" alt="${escapeHtml(book.title)}"></div>`
@@ -440,10 +481,21 @@ document.addEventListener('DOMContentLoaded', () => {
           ${coverMarkup}
           <h4 class="book-card-title">${escapeHtml(book.title)}</h4>
           <p class="book-card-meta">${escapeHtml(book.author)} • ${book.pages} pages</p>
-          <span class="status-pill ${statusClass}">${escapeHtml(book.status)}</span>
+          <button type="button" class="btn-toggle-status status-pill ${statusClass}" data-id="${book.id}" title="Click to cycle status: To Read → Reading → Read">
+            ${escapeHtml(book.status)}
+          </button>
         </article>
       `;
     }).join('');
+
+    // Attach Status Toggle listeners on Dashboard Grid
+    dashboardBookGrid.querySelectorAll('.btn-toggle-status').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(e.currentTarget.dataset.id, 10);
+        toggleBookStatus(id);
+      });
+    });
   }
 
   // --- 8. Catalog Render (Table View) ---
@@ -486,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filtered.length === 0) {
       catalogTableBody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 32px; color: var(--text-muted);">
+          <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-muted);">
             No books found matching your criteria.
           </td>
         </tr>
@@ -494,7 +546,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    catalogTableBody.innerHTML = filtered.map(book => `
+    catalogTableBody.innerHTML = filtered.map(book => {
+      const statusClass = getStatusClass(book.status);
+      return `
       <tr>
         <td><strong>${escapeHtml(book.title)}</strong></td>
         <td>${escapeHtml(book.author)}</td>
@@ -502,11 +556,25 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${escapeHtml(book.tag || 'General')}</td>
         <td>${escapeHtml(book.date || '-')}</td>
         <td>
+          <button type="button" class="btn-toggle-status status-pill ${statusClass}" data-id="${book.id}" title="Click to cycle status: To Read → Reading → Read">
+            ${escapeHtml(book.status || 'To Read')}
+          </button>
+        </td>
+        <td>
           <button type="button" class="btn-edit" data-id="${book.id}">Edit</button>
           <button type="button" class="btn-delete" data-id="${book.id}">Delete</button>
         </td>
       </tr>
-    `).join('');
+      `;
+    }).join('');
+
+    // Attach Status Toggle Listeners
+    catalogTableBody.querySelectorAll('.btn-toggle-status').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(e.currentTarget.dataset.id, 10);
+        toggleBookStatus(id);
+      });
+    });
 
     // Attach Edit & Delete Listeners
     catalogTableBody.querySelectorAll('.btn-edit').forEach(btn => {
