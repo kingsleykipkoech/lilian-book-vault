@@ -111,65 +111,31 @@
            VIEW 0: STARTING HOME PAGE
            =============================================================== -->
       <section class="view-section active" id="view-home">
-        <!-- Hero Welcome Card -->
-        <div class="home-hero-card">
-          <h1 class="header-title" style="margin-bottom: 10px;">A Quiet Space for Every Book You Read</h1>
-          <p class="home-hero-desc">
-            A quiet, organized place where you can keep track of every book you read, capture your reflections, monitor reading goals, and curate your personal collection without distractions.
-          </p>
+        <div class="home-hero-centered">
+          <div class="hero-watermark">VAULT</div>
 
+          <h1 class="hero-title-minimal">A Quiet Space for Every Book</h1>
+          <p class="hero-subtitle-minimal">Read. Reflect. Collect.</p>
 
-        </div>
-
-        <!-- Quick Section Jumps -->
-        <div class="home-section-header">
-          <h2>Quick Navigation</h2>
-          <p>Choose where you would like to go in your vault</p>
-        </div>
-
-        <div class="home-cards-grid">
-          <div class="card home-nav-card" data-jump="dashboard">
-            <div class="home-card-top">
-              <span class="home-badge badge-navy">GOALS & STATS</span>
-              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="9"></rect>
-                <rect x="14" y="3" width="7" height="5"></rect>
-                <rect x="14" y="12" width="7" height="9"></rect>
-                <rect x="3" y="16" width="7" height="5"></rect>
-              </svg>
+          <div class="home-cards-minimal">
+            <div class="card home-card-mini home-nav-card" data-jump="dashboard">
+              <span class="mini-card-badge">GOALS & STATS</span>
+              <h3>Dashboard</h3>
+              <span class="mini-card-link">View Progress &rarr;</span>
             </div>
-            <h3>Reading Dashboard</h3>
-            <p>View your reading goal progress, total pages read, currently reading book, and weekly habit metrics.</p>
-            <div class="home-card-action">Open Dashboard &rarr;</div>
-          </div>
 
-          <div class="card home-nav-card" data-jump="catalog">
-            <div class="home-card-top">
-              <span class="home-badge badge-teal">COLLECTION</span>
-              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
+            <div class="card home-card-mini home-nav-card" data-jump="catalog">
+              <span class="mini-card-badge">COLLECTION</span>
+              <h3>My Library</h3>
+              <span class="mini-card-link">Browse Books &rarr;</span>
             </div>
-            <h3>My Library</h3>
-            <p>Search, sort, filter by genre or status, and easily edit or delete book entries in a structured catalog.</p>
-            <div class="home-card-action">Browse Library &rarr;</div>
-          </div>
 
-          <div class="card home-nav-card" data-jump="add-book">
-            <div class="home-card-top">
-              <span class="home-badge badge-terracotta">RECORD</span>
-              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
+            <div class="card home-card-mini home-nav-card" data-jump="add-book">
+              <span class="mini-card-badge">NEW ENTRY</span>
+              <h3>Add Book</h3>
+              <span class="mini-card-link">Log a Title &rarr;</span>
             </div>
-            <h3>Add a Book</h3>
-            <p>Log a newly discovered title, record page counts, assign tags or genres, and select reading status.</p>
-            <div class="home-card-action">Add New Book &rarr;</div>
           </div>
-
-
         </div>
       </section>
 
@@ -243,11 +209,7 @@
            =============================================================== -->
       <section class="view-section" id="view-catalog">
         <div class="view-header">
-          <div>
-            <div class="header-tag">YOUR READING SPACE</div>
-            <h1 class="header-title">Catalog</h1>
-            <p class="header-subtitle">Search, sort, and manage every book in your vault.</p>
-          </div>
+          <h1 class="header-title">Catalog</h1>
           <button type="button" class="btn btn-primary btn-go-add">+ Add book</button>
         </div>
 
@@ -329,11 +291,7 @@
            =============================================================== -->
       <section class="view-section" id="view-add-book">
         <div class="view-header">
-          <div>
-            <div class="header-tag">YOUR READING SPACE</div>
-            <h1 class="header-title" id="form-view-title">Add Book</h1>
-            <p class="header-subtitle">Keep the details simple and easy to scan.</p>
-          </div>
+          <h1 class="header-title" id="form-view-title">Add Book</h1>
         </div>
 
         <!-- Add/Edit Form Card -->
@@ -407,11 +365,7 @@
            =============================================================== -->
       <section class="view-section" id="view-settings">
         <div class="view-header">
-          <div>
-            <div class="header-tag">YOUR READING SPACE</div>
-            <h1 class="header-title">Settings</h1>
-            <p class="header-subtitle">Set a reading target and manage your data.</p>
-          </div>
+          <h1 class="header-title">Settings</h1>
         </div>
 
         <div class="settings-grid">
