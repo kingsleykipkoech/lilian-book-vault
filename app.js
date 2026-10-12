@@ -164,10 +164,26 @@ document.addEventListener('DOMContentLoaded', () => {
     drawerBackdrop.addEventListener('click', closeDrawer);
   }
 
-  // --- 3. View Switching Function ---
-  function switchView(viewName) {
+  // --- 3. View Switching Function with Browser History & Back/Forward Support ---
+  function switchView(viewName, pushHistory = true) {
+    if (!viewName) viewName = 'home';
     currentView = viewName;
     closeDrawer();
+
+    // Push state to browser history so browser Back/Forward arrows work!
+    if (pushHistory) {
+      if (viewName === 'home') {
+        history.pushState({ view: 'home' }, '', window.location.pathname + window.location.search);
+      } else {
+        history.pushState({ view: viewName }, '', '#' + viewName);
+      }
+    }
+
+    // Toggle on-screen Back button
+    const btnBack = document.getElementById('btn-back');
+    if (btnBack) {
+      btnBack.style.display = viewName === 'home' ? 'none' : 'inline-flex';
+    }
 
     // Update active nav button in sidebar
     navItems.forEach(btn => {
@@ -192,7 +208,20 @@ document.addEventListener('DOMContentLoaded', () => {
       'add-book': 'Add a book',
       'settings': 'Settings'
     };
-    if (breadcrumbCurrent) {
+
+    const breadcrumbSub = document.getElementById('breadcrumb-sub');
+    const breadcrumbHomeBtn = document.getElementById('breadcrumb-home-btn');
+    if (breadcrumbHomeBtn && breadcrumbSub) {
+      if (viewName === 'home') {
+        breadcrumbHomeBtn.style.fontWeight = '600';
+        breadcrumbHomeBtn.style.color = 'var(--text-main)';
+        breadcrumbSub.innerHTML = '';
+      } else {
+        breadcrumbHomeBtn.style.fontWeight = '400';
+        breadcrumbHomeBtn.style.color = 'var(--text-muted)';
+        breadcrumbSub.innerHTML = `<span class="sep">/</span> <span class="current">${titles[viewName] || viewName}</span>`;
+      }
+    } else if (breadcrumbCurrent) {
       breadcrumbCurrent.textContent = titles[viewName] || 'Home';
     }
 
@@ -206,6 +235,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // Scroll main window to top
     const mainContent = document.querySelector('.main-content');
     if (mainContent) mainContent.scrollTop = 0;
+  }
+
+  // Handle browser Back / Forward navigation arrows!
+  window.addEventListener('popstate', (e) => {
+    const target = (e.state && e.state.view) || window.location.hash.replace('#', '') || 'home';
+    switchView(target, false);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const target = window.location.hash.replace('#', '') || 'home';
+    if (target !== currentView) {
+      switchView(target, false);
+    }
+  });
+
+  // Dedicated in-screen Back button click
+  const btnBack = document.getElementById('btn-back');
+  if (btnBack) {
+    btnBack.addEventListener('click', () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        switchView('home');
+      }
+    });
+  }
+
+  // Clickable Brand title goes Home
+  const brandHomeLink = document.getElementById('brand-home-link');
+  if (brandHomeLink) {
+    brandHomeLink.addEventListener('click', () => switchView('home'));
+  }
+
+  // Clickable Breadcrumb Home button goes Home
+  const breadcrumbHomeBtn = document.getElementById('breadcrumb-home-btn');
+  if (breadcrumbHomeBtn) {
+    breadcrumbHomeBtn.addEventListener('click', () => switchView('home'));
   }
 
   // Sidebar Nav click handlers
@@ -768,7 +834,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Support direct hash navigation (e.g. #dashboard, #add-book, #catalog)
   const initialHash = window.location.hash.replace('#', '');
   if (initialHash && ['home', 'dashboard', 'catalog', 'add-book', 'settings'].includes(initialHash)) {
-    switchView(initialHash);
+    switchView(initialHash, false);
+    history.replaceState({ view: initialHash }, '', '#' + initialHash);
+  } else {
+    history.replaceState({ view: 'home' }, '', window.location.pathname + window.location.search);
   }
 });
 
