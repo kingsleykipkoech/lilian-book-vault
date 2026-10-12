@@ -3,30 +3,30 @@
    Clean, simple, and semantic CSS
    ========================================================================== */
 
-/* Design Tokens — Dark, Classical, Elegant Library Aesthetic */
+/* Design Tokens — Warm Velvet Espresso Palette */
 :root {
-  --bg-sidebar: #0B121C;
+  --bg-sidebar: #0B121C; /* Lillian's favorite fine navy hamburger drawer */
   --bg-sidebar-active: rgba(255, 255, 255, 0.1);
   --bg-sidebar-hover: rgba(255, 255, 255, 0.06);
   --text-sidebar-muted: #8CA0B3;
 
-  --bg-body: #0E1622;
-  --bg-card: rgba(21, 34, 50, 0.75);
-  --bg-card-hover: rgba(26, 42, 62, 0.88);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-subtle: #1C2B3C;
+  --bg-body: #141210;
+  --bg-card: rgba(30, 26, 22, 0.75);
+  --bg-card-hover: rgba(42, 36, 30, 0.88);
+  --border-color: rgba(255, 240, 225, 0.08);
+  --border-subtle: rgba(255, 240, 225, 0.05);
 
-  --text-main: #F1EDE7;
-  --text-muted: #9AA8B8;
-  --text-subtle: #6A7C91;
-  --accent-tag: #2C6B5E;
+  --text-main: #F6F1EB;
+  --text-muted: #A69B8F;
+  --text-subtle: #7A6F63;
+  --accent-tag: #C88A58;
 
-  --btn-primary: #C85A38;
-  --btn-primary-hover: #B34D2E;
+  --btn-primary: #C88A58;
+  --btn-primary-hover: #B57845;
   --accent-gold: #D89B37;
-  --accent-teal: #10B981;
-  --accent-coral: #F43F5E;
-  --accent-yellow: #F59E0B;
+  --accent-teal: #2C6B5E;
+  --accent-coral: #C85A38;
+  --accent-yellow: #D89B37;
 
   --font-serif: 'DM Serif Display', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1182,13 +1182,13 @@ body {
 
 /* Dark Theme Form & Table Specifics */
 .search-input {
-  background: #101925;
+  background: #181512;
   border: 1px solid var(--border-color);
   color: var(--text-main);
 }
 
 .form-input, .form-select {
-  background: #101925;
+  background: #181512;
   border: 1px solid var(--border-color);
   color: var(--text-main);
 }
@@ -1203,7 +1203,7 @@ body {
 }
 
 .catalog-table th {
-  background: #101925;
+  background: #181512;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border-color);
 }
@@ -1290,8 +1290,8 @@ body {
 .favorite-cloth-cover {
   width: 100%;
   height: 100%;
-  background: #1C2B3C;
-  border: 1px solid #2D4158;
+  background: #25201A;
+  border: 1px solid #383027;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1364,7 +1364,7 @@ body {
 }
 
 .cover-upload-box {
-  background: #101925;
+  background: #181512;
   border: 1px dashed var(--border-color);
   border-radius: var(--radius-sm);
   padding: 16px;
