@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book & Notes Vault</title>
+
+  <!-- Google Fonts: DM Serif Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Simple Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- ===================================================================
+         SIDEBAR NAVIGATION
+         =================================================================== -->
+    <aside class="sidebar">
+      <!-- App Brand -->
+      <div class="brand">
+        <div class="brand-icon">✦</div>
+        <span class="brand-title">Book & Notes Vault</span>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <div class="nav-group-label">WORKSPACE</div>
+        <button type="button" class="nav-item active" data-view="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Dashboard
+        </button>
+
+        <button type="button" class="nav-item" data-view="catalog">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          My Library
+        </button>
+
+        <button type="button" class="nav-item" data-view="add-book">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add a book
+        </button>
+
+        <div class="nav-group-label" style="margin-top: 24px;">MANAGE</div>
+        <button type="button" class="nav-item" data-view="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </button>
+      </nav>
+
+      <!-- Sidebar Bottom Note -->
+      <div class="sidebar-footer-card">
+        <strong>Your reading space</strong>
+        <p>Keep your collection close, focused, and easy to revisit.</p>
+      </div>
+    </aside>
+
+    <!-- ===================================================================
+         MAIN CONTENT AREA
+         =================================================================== -->
+    <main class="main-content">
+
+      <!-- Top Header Bar -->
+      <header class="topbar">
+        <div class="breadcrumbs" id="breadcrumb-text">
+          <span>Book & Notes Vault</span> <span class="sep">/</span> <span class="current">Dashboard</span>
+        </div>
+        <div class="user-greeting">
+          <span>Good reading, today.</span>
+          <div class="avatar" title="Lilian">L</div>
+        </div>
+      </header>
+
+      <!-- ===============================================================
+           VIEW 1: DASHBOARD
+           =============================================================== -->
+      <section class="view-section active" id="view-dashboard">
+        <div class="view-header">
+          <div>
+            <div class="header-tag">YOUR READING SPACE</div>
+            <h1 class="header-title">Dashboard</h1>
+            <p class="header-subtitle">A calm place to keep track of what you are reading.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-go-add">+ Add book</button>
+        </div>
+
+        <!-- Reading Goal Card -->
+        <div class="card goal-card">
+          <div class="goal-header">
+            <strong>Reading Goal</strong>
+            <span id="goal-count-label">1/50 books</span>
+          </div>
+          <div class="goal-progress-track">
+            <div class="goal-progress-bar" id="goal-progress-bar" style="width: 2%;"></div>
+          </div>
+          <div class="goal-footer" id="goal-status-text">2% complete • 49 remaining</div>
+        </div>
+
+        <!-- 3 Stat Cards (Top Row) -->
+        <div class="stats-row">
+          <div class="card stat-card">
+            <span class="stat-label">Current Read</span>
+            <strong class="stat-value" id="stat-current-read">The Midnight Library</strong>
+          </div>
+          <div class="card stat-card">
+            <span class="stat-label">Total Pages</span>
+            <strong class="stat-value" id="stat-total-pages">288</strong>
+          </div>
+          <div class="card stat-card">
+            <span class="stat-label">Total Books Read</span>
+            <strong class="stat-value" id="stat-books-read">0</strong>
+          </div>
+        </div>
+
+        <!-- 3 Stat Cards (Bottom Row with Color Accents) -->
+        <div class="stats-row" style="margin-top: 16px;">
+          <div class="card stat-card stat-accent-yellow">
+            <span class="stat-label">Most common tag</span>
+            <strong class="stat-value" id="stat-common-tag">Fiction</strong>
+          </div>
+          <div class="card stat-card stat-accent-teal">
+            <span class="stat-label">Added this week</span>
+            <strong class="stat-value" id="stat-added-week">1</strong>
+          </div>
+          <div class="card stat-card stat-accent-coral">
+            <span class="stat-label">Page target</span>
+            <strong class="stat-value" id="stat-page-target">288 / 15000</strong>
+          </div>
+        </div>
+
+        <!-- Search Bar Row -->
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <input type="text" id="dash-search-input" class="search-input" placeholder="Search books...">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="dash-regex-check"> Regex filter
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="dash-case-check"> Case sensitive
+          </label>
+        </div>
+
+        <!-- Split Grid: Filters Sidebar + Collection Grid -->
+        <div class="dashboard-split">
+          <!-- Filter Panel -->
+          <aside class="filter-panel">
+            <h3 class="filter-panel-title">Filter By</h3>
+
+            <div class="filter-group">
+              <span class="filter-group-heading">Genres</span>
+              <label class="checkbox-label">
+                <input type="checkbox" class="filter-genre-checkbox" value="Fiction"> Fiction
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="filter-genre-checkbox" value="Sci-Fi"> Sci-Fi
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="filter-genre-checkbox" value="Memoir"> Memoir
+              </label>
+            </div>
+
+            <div class="filter-group" style="margin-top: 18px;">
+              <span class="filter-group-heading">Status</span>
+              <label class="checkbox-label">
+                <input type="checkbox" class="filter-status-checkbox" value="Reading"> Reading
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="filter-status-checkbox" value="Read"> Read
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="filter-status-checkbox" value="To Read"> To Read
+              </label>
+            </div>
+          </aside>
+
+          <!-- Books Collection Area -->
+          <div class="collection-area">
+            <h3 class="collection-heading" id="collection-heading">My Book Collection (1)</h3>
+            <div class="book-grid" id="dashboard-book-grid">
+              <!-- Dynamically populated via app.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           VIEW 2: CATALOG (MY LIBRARY)
+           =============================================================== -->
+      <section class="view-section" id="view-catalog">
+        <div class="view-header">
+          <div>
+            <div class="header-tag">YOUR READING SPACE</div>
+            <h1 class="header-title">Catalog</h1>
+            <p class="header-subtitle">Search, sort, and manage every book in your vault.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-go-add">+ Add book</button>
+        </div>
+
+        <!-- Search Bar Row -->
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <input type="text" id="catalog-search-input" class="search-input" placeholder="Search books...">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="catalog-regex-check"> Regex filter
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="catalog-case-check"> Case sensitive
+          </label>
+        </div>
+
+        <!-- Filter & Sort Strip -->
+        <div class="toolbar-strip">
+          <div class="select-field">
+            <label for="catalog-sort">Sort</label>
+            <select id="catalog-sort" class="form-select">
+              <option value="title-asc">Title (A-Z)</option>
+              <option value="title-desc">Title (Z-A)</option>
+              <option value="pages-desc">Pages (High to Low)</option>
+              <option value="date-desc">Recently Added</option>
+            </select>
+          </div>
+
+          <div class="select-field">
+            <label for="catalog-filter-tag">Tag</label>
+            <select id="catalog-filter-tag" class="form-select">
+              <option value="All">All</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Sci-Fi">Sci-Fi</option>
+              <option value="Memoir">Memoir</option>
+            </select>
+          </div>
+
+          <div class="select-field">
+            <label for="catalog-filter-status">Status</label>
+            <select id="catalog-filter-status" class="form-select">
+              <option value="All">All</option>
+              <option value="Reading">Reading</option>
+              <option value="Read">Read</option>
+              <option value="To Read">To Read</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Books Table Card -->
+        <div class="card table-card">
+          <div class="table-card-header" id="table-count-label">1 book in your collection</div>
+          <div class="table-responsive">
+            <table class="catalog-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Pages</th>
+                  <th>Tag</th>
+                  <th>Date Added</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-table-body">
+                <!-- Dynamically populated via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           VIEW 3: ADD BOOK
+           =============================================================== -->
+      <section class="view-section" id="view-add-book">
+        <div class="view-header">
+          <div>
+            <div class="header-tag">YOUR READING SPACE</div>
+            <h1 class="header-title" id="form-view-title">Add Book</h1>
+            <p class="header-subtitle">Keep the details simple and easy to scan.</p>
+          </div>
+        </div>
+
+        <!-- Add/Edit Form Card -->
+        <div class="card form-card">
+          <form id="book-form">
+            <input type="hidden" id="editing-book-id" value="">
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="form-title" class="form-label">Book Title</label>
+                <input type="text" id="form-title" class="form-input" required placeholder="e.g. The Midnight Library">
+              </div>
+
+              <div class="form-field">
+                <label for="form-author" class="form-label">Author</label>
+                <input type="text" id="form-author" class="form-input" required placeholder="e.g. Matt Haig">
+              </div>
+
+              <div class="form-field">
+                <label for="form-pages" class="form-label">Number of Pages</label>
+                <input type="number" id="form-pages" class="form-input" required min="1" placeholder="288">
+              </div>
+
+              <div class="form-field">
+                <label for="form-tag" class="form-label">Tag or Genre</label>
+                <input type="text" id="form-tag" class="form-input" placeholder="e.g. fiction">
+              </div>
+
+              <div class="form-field">
+                <label for="form-date" class="form-label">Date Added</label>
+                <input type="date" id="form-date" class="form-input" required>
+              </div>
+
+              <div class="form-field">
+                <label for="form-status" class="form-label">Reading Status</label>
+                <select id="form-status" class="form-select">
+                  <option value="To Read" selected>To Read</option>
+                  <option value="Reading">Reading</option>
+                  <option value="Read">Read</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="btn-save-book">Save Book</button>
+              <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ===============================================================
+           VIEW 4: SETTINGS
+           =============================================================== -->
+      <section class="view-section" id="view-settings">
+        <div class="view-header">
+          <div>
+            <div class="header-tag">YOUR READING SPACE</div>
+            <h1 class="header-title">Settings</h1>
+            <p class="header-subtitle">Set a reading target and manage your data.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Card 1: Preferences -->
+          <div class="card settings-card">
+            <h3 class="settings-card-title">Reading Preferences</h3>
+            <form id="settings-form">
+              <div class="form-field" style="margin-bottom: 16px;">
+                <label for="pref-book-target" class="form-label">Book target</label>
+                <input type="number" id="pref-book-target" class="form-input" value="50" min="1" required>
+              </div>
+
+              <div class="form-field" style="margin-bottom: 20px;">
+                <label for="pref-page-unit" class="form-label">Page-count unit</label>
+                <select id="pref-page-unit" class="form-select">
+                  <option value="Pages" selected>Pages</option>
+                  <option value="Hours">Hours</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Save preferences</button>
+            </form>
+          </div>
+
+          <!-- Card 2: Import / Export -->
+          <div class="card settings-card">
+            <h3 class="settings-card-title">Import / Export</h3>
+            <p class="settings-card-desc">Your data stays in this browser unless you export it.</p>
+            
+            <div class="import-export-row">
+              <button type="button" class="btn btn-secondary" id="btn-export-json">Export JSON</button>
+              <button type="button" class="btn btn-secondary" id="btn-import-trigger">Import JSON</button>
+              <input type="file" id="import-file-input" accept=".json" style="display: none;">
+            </div>
+          </div>
+
+          <!-- Card 3: About -->
+          <div class="card settings-card settings-card-wide">
+            <h3 class="settings-card-title">About</h3>
+            <p class="settings-card-desc" style="margin-bottom: 16px;">
+              Book & Notes Vault helps you organize books, notes, tags, and reading progress in one quiet, focused place.
+            </p>
+            
+            <div class="contact-block">
+              <strong>Contact</strong>
+              <div><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></div>
+              <div><a href="mailto:support@bookvault.app">support@bookvault.app</a></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
