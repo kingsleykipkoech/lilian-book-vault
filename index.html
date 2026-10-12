@@ -15,7 +15,76 @@
 </head>
 <body>
 
-  <div class="app-layout">
+    <!-- ===================================================================
+         HAMBURGER NAVIGATION DRAWER (Lillian's Navy Blue #0F2942 Theme)
+         =================================================================== -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="nav-drawer" id="nav-drawer" aria-label="Quick Navigation">
+      <div class="drawer-top">
+        <div class="brand">
+          <div class="brand-icon">✦</div>
+          <span class="brand-title">Book & Notes Vault</span>
+        </div>
+        <button type="button" class="drawer-close" id="drawer-close-btn" aria-label="Close menu">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-section-title">NAVIGATION</div>
+
+      <nav class="drawer-nav">
+        <button type="button" class="drawer-item active" data-view="home">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Home
+        </button>
+
+        <button type="button" class="drawer-item" data-view="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9"></rect>
+            <rect x="14" y="3" width="7" height="5"></rect>
+            <rect x="14" y="12" width="7" height="9"></rect>
+            <rect x="3" y="16" width="7" height="5"></rect>
+          </svg>
+          Dashboard
+        </button>
+
+        <button type="button" class="drawer-item" data-view="catalog">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          My Library
+        </button>
+
+        <button type="button" class="drawer-item" data-view="add-book">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add a book
+        </button>
+
+        <div class="drawer-section-title" style="margin-top: 18px;">MANAGE</div>
+
+        <button type="button" class="drawer-item" data-view="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </button>
+      </nav>
+
+      <div class="drawer-footer">
+        <p>Lillian's Reading Space &bull; Book Vault</p>
+      </div>
+    </aside>
 
     <!-- ===================================================================
          SIDEBAR NAVIGATION
@@ -30,10 +99,20 @@
       <!-- Navigation Menu -->
       <nav class="sidebar-nav">
         <div class="nav-group-label">WORKSPACE</div>
-        <button type="button" class="nav-item active" data-view="dashboard">
+        <button type="button" class="nav-item active" data-view="home">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Home
+        </button>
+
+        <button type="button" class="nav-item" data-view="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9"></rect>
+            <rect x="14" y="3" width="7" height="5"></rect>
+            <rect x="14" y="12" width="7" height="9"></rect>
+            <rect x="3" y="16" width="7" height="5"></rect>
           </svg>
           Dashboard
         </button>
@@ -76,10 +155,17 @@
          =================================================================== -->
     <main class="main-content">
 
-      <!-- Top Header Bar -->
+      <!-- Top Header Bar with Hamburger Button -->
       <header class="topbar">
-        <div class="breadcrumbs" id="breadcrumb-text">
-          <span>Book & Notes Vault</span> <span class="sep">/</span> <span class="current">Dashboard</span>
+        <div class="topbar-left">
+          <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation menu" title="Open navigation menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </button>
+          <div class="breadcrumbs" id="breadcrumb-text">
+            <span>Book & Notes Vault</span> <span class="sep">/</span> <span class="current">Home</span>
+          </div>
         </div>
         <div class="user-greeting">
           <span>Good reading, today.</span>
@@ -88,9 +174,97 @@
       </header>
 
       <!-- ===============================================================
+           VIEW 0: STARTING HOME PAGE
+           =============================================================== -->
+      <section class="view-section active" id="view-home">
+        <!-- Hero Welcome Card -->
+        <div class="home-hero-card">
+          <div class="header-tag">YOUR PERSONAL READING SANCTUM</div>
+          <h1 class="header-title" style="margin-bottom: 10px;">Welcome to Book & Notes Vault</h1>
+          <p class="home-hero-desc">
+            A quiet, organized place where you can keep track of every book you read, capture your reflections, monitor reading goals, and curate your personal collection without distractions.
+          </p>
+
+          <div class="home-hero-actions">
+            <button type="button" class="btn btn-primary" id="home-btn-library">Explore My Library</button>
+            <button type="button" class="btn btn-secondary" id="home-btn-dashboard">Reading Dashboard</button>
+            <button type="button" class="btn btn-secondary" id="home-btn-add">+ Add a Book</button>
+          </div>
+        </div>
+
+        <!-- Quick Section Jumps -->
+        <div class="home-section-header">
+          <h2>Quick Navigation</h2>
+          <p>Choose where you would like to go in your vault</p>
+        </div>
+
+        <div class="home-cards-grid">
+          <div class="card home-nav-card" data-jump="dashboard">
+            <div class="home-card-top">
+              <span class="home-badge badge-navy">GOALS & STATS</span>
+              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="9"></rect>
+                <rect x="14" y="3" width="7" height="5"></rect>
+                <rect x="14" y="12" width="7" height="9"></rect>
+                <rect x="3" y="16" width="7" height="5"></rect>
+              </svg>
+            </div>
+            <h3>Reading Dashboard</h3>
+            <p>View your reading goal progress, total pages read, currently reading book, and weekly habit metrics.</p>
+            <div class="home-card-action">Open Dashboard &rarr;</div>
+          </div>
+
+          <div class="card home-nav-card" data-jump="catalog">
+            <div class="home-card-top">
+              <span class="home-badge badge-teal">COLLECTION</span>
+              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <h3>My Library</h3>
+            <p>Search, sort, filter by genre or status, and easily edit or delete book entries in a structured catalog.</p>
+            <div class="home-card-action">Browse Library &rarr;</div>
+          </div>
+
+          <div class="card home-nav-card" data-jump="add-book">
+            <div class="home-card-top">
+              <span class="home-badge badge-terracotta">RECORD</span>
+              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+            <h3>Add a Book</h3>
+            <p>Log a newly discovered title, record page counts, assign tags or genres, and select reading status.</p>
+            <div class="home-card-action">Add New Book &rarr;</div>
+          </div>
+
+          <div class="card home-nav-card" data-jump="settings">
+            <div class="home-card-top">
+              <span class="home-badge badge-amber">PREFERENCES</span>
+              <svg class="home-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </div>
+            <h3>Settings & Backup</h3>
+            <p>Customize your annual reading targets, choose measurement units, and export or import data safely.</p>
+            <div class="home-card-action">Manage Settings &rarr;</div>
+          </div>
+        </div>
+
+        <!-- Classic Reading Reflection -->
+        <div class="home-quote-box">
+          <p class="quote-text">&ldquo;A reader lives a thousand lives before he dies. The man who never reads lives only one.&rdquo;</p>
+          <span class="quote-source">&mdash; George R.R. Martin</span>
+        </div>
+      </section>
+
+      <!-- ===============================================================
            VIEW 1: DASHBOARD
            =============================================================== -->
-      <section class="view-section active" id="view-dashboard">
+      <section class="view-section" id="view-dashboard">
         <div class="view-header">
           <div>
             <div class="header-tag">YOUR READING SPACE</div>

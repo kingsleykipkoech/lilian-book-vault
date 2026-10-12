@@ -21,14 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
   let books = JSON.parse(localStorage.getItem('lilian_vault_books')) || defaultBooks;
   let readingTarget = parseInt(localStorage.getItem('lilian_reading_target'), 10) || 50;
 
-  // Active view tracker
-  let currentView = 'dashboard';
+  // Active view tracker (default starts on Lillian's Home Page)
+  let currentView = 'home';
 
   // --- 2. DOM Elements ---
   const navItems = document.querySelectorAll('.sidebar .nav-item');
+  const drawerItems = document.querySelectorAll('.drawer-item');
   const viewSections = document.querySelectorAll('.view-section');
   const breadcrumbCurrent = document.querySelector('#breadcrumb-text .current');
   const goAddBtns = document.querySelectorAll('.btn-go-add');
+
+  // Hamburger & Drawer elements
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const navDrawer = document.getElementById('nav-drawer');
+  const drawerBackdrop = document.getElementById('drawer-backdrop');
+  const drawerCloseBtn = document.getElementById('drawer-close-btn');
+
+  // Home Page elements
+  const homeBtnLibrary = document.getElementById('home-btn-library');
+  const homeBtnDashboard = document.getElementById('home-btn-dashboard');
+  const homeBtnAdd = document.getElementById('home-btn-add');
+  const homeNavCards = document.querySelectorAll('.home-nav-card');
 
   // Dashboard elements
   const goalCountLabel = document.getElementById('goal-count-label');
@@ -84,12 +97,53 @@ document.addEventListener('DOMContentLoaded', () => {
     formDate.value = today;
   }
 
+  // --- Hamburger Drawer Helpers ---
+  function openDrawer() {
+    if (navDrawer && drawerBackdrop && hamburgerBtn) {
+      navDrawer.classList.add('active');
+      drawerBackdrop.classList.add('active');
+      hamburgerBtn.classList.add('active');
+    }
+  }
+
+  function closeDrawer() {
+    if (navDrawer && drawerBackdrop && hamburgerBtn) {
+      navDrawer.classList.remove('active');
+      drawerBackdrop.classList.remove('active');
+      hamburgerBtn.classList.remove('active');
+    }
+  }
+
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', () => {
+      if (navDrawer && navDrawer.classList.contains('active')) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
+  }
+
+  if (drawerCloseBtn) {
+    drawerCloseBtn.addEventListener('click', closeDrawer);
+  }
+
+  if (drawerBackdrop) {
+    drawerBackdrop.addEventListener('click', closeDrawer);
+  }
+
   // --- 3. View Switching Function ---
   function switchView(viewName) {
     currentView = viewName;
+    closeDrawer();
 
-    // Update active nav button
+    // Update active nav button in sidebar
     navItems.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === viewName);
+    });
+
+    // Update active nav button in drawer
+    drawerItems.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === viewName);
     });
 
@@ -100,13 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update breadcrumb
     const titles = {
+      'home': 'Home',
       'dashboard': 'Dashboard',
       'catalog': 'My Library',
       'add-book': 'Add a book',
       'settings': 'Settings'
     };
     if (breadcrumbCurrent) {
-      breadcrumbCurrent.textContent = titles[viewName] || 'Dashboard';
+      breadcrumbCurrent.textContent = titles[viewName] || 'Home';
     }
 
     // Refresh view data
@@ -115,9 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (viewName === 'catalog') {
       renderCatalog();
     }
+
+    // Scroll main window to top
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.scrollTop = 0;
   }
 
-  // Nav click handlers
+  // Sidebar Nav click handlers
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetView = btn.dataset.view;
@@ -125,6 +184,40 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBookForm();
       }
       switchView(targetView);
+    });
+  });
+
+  // Drawer Nav click handlers
+  drawerItems.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetView = btn.dataset.view;
+      if (targetView === 'add-book') {
+        resetBookForm();
+      }
+      switchView(targetView);
+    });
+  });
+
+  // Home Page Quick Links
+  if (homeBtnLibrary) {
+    homeBtnLibrary.addEventListener('click', () => switchView('catalog'));
+  }
+  if (homeBtnDashboard) {
+    homeBtnDashboard.addEventListener('click', () => switchView('dashboard'));
+  }
+  if (homeBtnAdd) {
+    homeBtnAdd.addEventListener('click', () => {
+      resetBookForm();
+      switchView('add-book');
+    });
+  }
+  homeNavCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const jumpTarget = card.dataset.jump;
+      if (jumpTarget === 'add-book') {
+        resetBookForm();
+      }
+      switchView(jumpTarget);
     });
   });
 
