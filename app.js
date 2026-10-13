@@ -226,7 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Refresh view data
-    if (viewName === 'dashboard') {
+    if (viewName === 'home') {
+      updateHomeHeroStats();
+    } else if (viewName === 'dashboard') {
       renderDashboard();
     } else if (viewName === 'catalog') {
       renderCatalog();
@@ -296,28 +298,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Home Page Quick Links
-  if (homeBtnLibrary) {
-    homeBtnLibrary.addEventListener('click', () => switchView('catalog'));
-  }
-  if (homeBtnDashboard) {
-    homeBtnDashboard.addEventListener('click', () => switchView('dashboard'));
-  }
-  if (homeBtnAdd) {
-    homeBtnAdd.addEventListener('click', () => {
-      resetBookForm();
-      switchView('add-book');
-    });
-  }
-  homeNavCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const jumpTarget = card.dataset.jump;
-      if (jumpTarget === 'add-book') {
-        resetBookForm();
+  // --- Home Page Hero Interactions & Dynamic Stats ---
+  function updateHomeHeroStats() {
+    const homeStatBooks = document.getElementById('home-stat-books');
+    const homeStatPages = document.getElementById('home-stat-pages');
+    const homeStatGoal = document.getElementById('home-stat-goal');
+
+    const completedReads = books.filter(b => b.status === 'Read').length;
+    const goalPercent = Math.min(100, Math.round((completedReads / readingTarget) * 100));
+    const totalPages = books.reduce((acc, b) => acc + (parseInt(b.pages, 10) || 0), 0);
+
+    if (homeStatBooks) homeStatBooks.textContent = books.length.toString();
+    if (homeStatPages) homeStatPages.textContent = totalPages.toLocaleString();
+    if (homeStatGoal) homeStatGoal.textContent = `${goalPercent}%`;
+
+    const spotlightTitle = document.getElementById('home-spotlight-title');
+    const spotlightAuthor = document.getElementById('home-spotlight-author');
+    const spotlightImg = document.getElementById('home-spotlight-img');
+
+    const activeRead = books.find(b => b.status === 'Reading') || books[0];
+    if (activeRead && spotlightTitle) {
+      spotlightTitle.textContent = activeRead.title;
+      if (spotlightAuthor) spotlightAuthor.textContent = `by ${activeRead.author} • ${activeRead.tag || 'Literature'}`;
+      if (activeRead.cover && spotlightImg) {
+        spotlightImg.src = activeRead.cover;
       }
-      switchView(jumpTarget);
-    });
-  });
+    }
+  }
+
+  const homeCtaLibrary = document.getElementById('home-cta-library');
+  if (homeCtaLibrary) {
+    homeCtaLibrary.addEventListener('click', () => switchView('catalog'));
+  }
+
+  const homeCtaDashboard = document.getElementById('home-cta-dashboard');
+  if (homeCtaDashboard) {
+    homeCtaDashboard.addEventListener('click', () => switchView('dashboard'));
+  }
+
+  const homeSpotlightViewBtn = document.getElementById('home-spotlight-view-btn');
+  if (homeSpotlightViewBtn) {
+    homeSpotlightViewBtn.addEventListener('click', () => switchView('catalog'));
+  }
 
   // "+ Add book" CTA buttons
   goAddBtns.forEach(btn => {
@@ -366,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function persistData() {
     localStorage.setItem('lilian_vault_books', JSON.stringify(books));
     localStorage.setItem('lilian_reading_target', readingTarget.toString());
+    updateHomeHeroStats();
   }
 
   // --- 6. Helper: Search Match with Regex & Case Sensitivity ---
@@ -828,6 +851,7 @@ document.addEventListener('DOMContentLoaded', () => {
   statusCheckboxes.forEach(cb => cb.addEventListener('change', renderDashboard));
 
   // --- Initial Render ---
+  updateHomeHeroStats();
   renderDashboard();
   renderCatalog();
 

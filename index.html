@@ -112,37 +112,80 @@
             <span id="breadcrumb-sub"></span>
           </div>
         </div>
+        <div class="topbar-right">
+          <button type="button" class="btn btn-primary btn-sm btn-go-add">+ Add book</button>
+        </div>
       </header>
 
       <!-- ===============================================================
-           VIEW 0: STARTING HOME PAGE
+           VIEW 0: STARTING HOME PAGE (EDITORIAL 2-COLUMN HERO)
            =============================================================== -->
       <section class="view-section active" id="view-home">
-        <div class="home-hero-centered">
-          <div class="hero-watermark">VAULT</div>
+        <div class="home-hero-layout">
 
-          <h1 class="hero-title-minimal">A Quiet Space for Every Book</h1>
-          <p class="hero-subtitle-minimal">Read. Reflect. Collect.</p>
+          <!-- Left Column: Editorial Welcome & Actions -->
+          <div class="home-intro-col">
+            <span class="home-badge-tag">PERSONAL READING VAULT</span>
+            <h1 class="home-headline">
+              <span>A Quiet Space</span>
+              <span>for Every Book</span>
+            </h1>
+            <p class="home-subheadline">
+              Read. Reflect. Collect. A mindful catalog for tracking finished works, favorite passages, and reading velocity.
+            </p>
 
-          <div class="home-cards-minimal">
-            <div class="card home-card-mini home-nav-card" data-jump="dashboard">
-              <span class="mini-card-badge">GOALS & STATS</span>
-              <h3>Dashboard</h3>
-              <span class="mini-card-link">View Progress &rarr;</span>
+            <div class="home-actions-row">
+              <button type="button" class="btn btn-primary" id="home-cta-library">Browse Library &rarr;</button>
+              <button type="button" class="btn btn-secondary" id="home-cta-dashboard">Dashboard</button>
             </div>
 
-            <div class="card home-card-mini home-nav-card" data-jump="catalog">
-              <span class="mini-card-badge">COLLECTION</span>
-              <h3>My Library</h3>
-              <span class="mini-card-link">Browse Books &rarr;</span>
-            </div>
-
-            <div class="card home-card-mini home-nav-card" data-jump="add-book">
-              <span class="mini-card-badge">NEW ENTRY</span>
-              <h3>Add Book</h3>
-              <span class="mini-card-link">Log a Title &rarr;</span>
+            <!-- Compact Metrics Chips -->
+            <div class="home-metrics-bar">
+              <div class="metric-chip" id="chip-books">
+                <span class="metric-icon">📚</span>
+                <div class="metric-data">
+                  <strong id="home-stat-books">1</strong>
+                  <small>Books</small>
+                </div>
+              </div>
+              <div class="metric-chip" id="chip-pages">
+                <span class="metric-icon">📄</span>
+                <div class="metric-data">
+                  <strong id="home-stat-pages">288</strong>
+                  <small>Pages</small>
+                </div>
+              </div>
+              <div class="metric-chip" id="chip-goal">
+                <span class="metric-icon">🎯</span>
+                <div class="metric-data">
+                  <strong id="home-stat-goal">2%</strong>
+                  <small>Goal</small>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- Right Column: Spotlight Book Card (Currently Reading) -->
+          <div class="home-spotlight-col">
+            <div class="card spotlight-book-card">
+              <div class="spotlight-cover-wrap">
+                <img src="./assets/midnight-library.jpg" alt="The Midnight Library Book Cover" class="spotlight-cover-img" id="home-spotlight-img">
+              </div>
+
+              <div class="spotlight-details">
+                <span class="badge-amber-pill">CURRENTLY READING</span>
+                <h2 class="spotlight-title" id="home-spotlight-title">The Midnight Library</h2>
+                <p class="spotlight-author" id="home-spotlight-author">by Matt Haig • Fiction</p>
+                <p class="spotlight-quote" id="home-spotlight-quote">
+                  &ldquo;Between life and death there is a library where shelves go on forever. Every book provides a chance to try another life.&rdquo;
+                </p>
+                <div class="spotlight-footer">
+                  <button type="button" class="btn-link-action" id="home-spotlight-view-btn">View in Library &rarr;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
