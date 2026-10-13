@@ -12,7 +12,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
 </head>
 <body>
 
@@ -339,11 +341,10 @@
               </div>
 
               <div class="form-field form-field-full">
-                <label class="form-label">Book Cover Image</label>
-                <input type="text" id="form-cover-url" class="form-input" placeholder="Paste image web URL (or upload from device below)" style="margin-bottom: 8px;">
+                <label class="form-label" for="form-cover-file">Book Cover Image</label>
                 <div class="cover-upload-box">
                   <input type="file" id="form-cover-file" class="form-file-input" accept="image/*">
-                  <div class="cover-upload-info">Or choose an image file from your device</div>
+                  <div class="cover-upload-info">Upload a cover image file from your device</div>
                   <div class="cover-preview-row" id="cover-preview-row" style="display: none;">
                     <img id="cover-preview-img" src="" alt="Cover Preview" class="cover-thumb">
                     <button type="button" class="btn btn-secondary btn-sm" id="btn-remove-cover">Remove Image</button>
@@ -416,6 +417,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js"></script>
+  <script src="scripts/app.js"></script>
 </body>
 </html>

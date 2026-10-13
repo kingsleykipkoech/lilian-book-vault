@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const formDate = document.getElementById('form-date');
   const formStatus = document.getElementById('form-status');
   const formSynopsis = document.getElementById('form-synopsis');
-  const formCoverUrl = document.getElementById('form-cover-url');
   const btnCancelForm = document.getElementById('btn-cancel-form');
   const formCoverFile = document.getElementById('form-cover-file');
   const coverPreviewRow = document.getElementById('cover-preview-row');
@@ -123,24 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
           currentUploadedCover = newlyPickedCoverFile;
           if (coverPreviewImg) coverPreviewImg.src = newlyPickedCoverFile;
           if (coverPreviewRow) coverPreviewRow.style.display = 'flex';
-          if (formCoverUrl) formCoverUrl.value = '';
         };
         reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  if (formCoverUrl) {
-    formCoverUrl.addEventListener('input', () => {
-      const val = formCoverUrl.value.trim();
-      if (val) {
-        newlyPickedCoverFile = '';
-        currentUploadedCover = val;
-        if (coverPreviewImg) coverPreviewImg.src = val;
-        if (coverPreviewRow) coverPreviewRow.style.display = 'flex';
-      } else if (!newlyPickedCoverFile) {
-        if (coverPreviewRow) coverPreviewRow.style.display = 'none';
-        if (coverPreviewImg) coverPreviewImg.src = '';
       }
     });
   }
@@ -317,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (spotlightTag) spotlightTag.textContent = 'Currently Reading';
       const synopsisText = activeRead.synopsis || 'No synopsis added yet for this book.';
       if (spotlightSynopsis) spotlightSynopsis.textContent = synopsisText;
-      const coverSrc = activeRead.coverImage || activeRead.cover || './assets/midnight-library.jpg';
+      const coverSrc = activeRead.coverImage || activeRead.cover || './assets/empty-book.svg';
       if (spotlightImg) {
         spotlightImg.src = coverSrc;
         spotlightImg.alt = `${activeRead.title} Cover`;
@@ -327,39 +310,20 @@ document.addEventListener('DOMContentLoaded', () => {
         spotlightViewBtn.textContent = 'View in Library →';
         spotlightViewBtn.onclick = () => switchView('catalog');
       }
-    } else if (books.length > 0) {
-      const fallbackBook = books.find(b => b.isFavorite) || books[0];
-      spotlightTitle.textContent = fallbackBook.title;
-      if (spotlightAuthor) spotlightAuthor.textContent = `by ${fallbackBook.author} • ${fallbackBook.tag || 'General'}`;
-      if (spotlightTag) spotlightTag.textContent = fallbackBook.isFavorite ? 'Favorite Book' : 'Featured Book';
-      const synopsisText = fallbackBook.synopsis || 'Set this book or any other to "Reading" in My Library to track your current read.';
-      if (spotlightSynopsis) spotlightSynopsis.textContent = synopsisText;
-      const coverSrc = fallbackBook.coverImage || fallbackBook.cover || './assets/midnight-library.jpg';
+    } else {
+      spotlightTitle.textContent = 'No Current Read';
+      if (spotlightAuthor) spotlightAuthor.textContent = 'Choose a book to start tracking';
+      if (spotlightTag) spotlightTag.textContent = 'Currently Reading';
+      const emptyText = 'You do not have a book marked as Currently Reading. Select any book in My Library and set its status to Reading to track it here.';
+      if (spotlightSynopsis) spotlightSynopsis.textContent = emptyText;
       if (spotlightImg) {
-        spotlightImg.src = coverSrc;
-        spotlightImg.alt = `${fallbackBook.title} Cover`;
+        spotlightImg.src = './assets/empty-book.svg';
+        spotlightImg.alt = 'No Book Selected';
         spotlightImg.style.display = 'block';
       }
       if (spotlightViewBtn) {
-        spotlightViewBtn.textContent = 'View in Library →';
+        spotlightViewBtn.textContent = 'Browse Library →';
         spotlightViewBtn.onclick = () => switchView('catalog');
-      }
-    } else {
-      spotlightTitle.textContent = 'No Books In Vault';
-      if (spotlightAuthor) spotlightAuthor.textContent = 'Add your first book to begin reading';
-      if (spotlightTag) spotlightTag.textContent = 'Personal Reading Vault';
-      const emptyText = 'Your vault is currently empty. Click below to add a book to your collection.';
-      if (spotlightSynopsis) spotlightSynopsis.textContent = emptyText;
-      if (spotlightImg) {
-        spotlightImg.src = './assets/midnight-library.jpg';
-        spotlightImg.alt = 'No Books Available';
-      }
-      if (spotlightViewBtn) {
-        spotlightViewBtn.textContent = '+ Add a Book';
-        spotlightViewBtn.onclick = () => {
-          resetBookForm();
-          switchView('add-book');
-        };
       }
     }
   }
@@ -455,15 +419,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!favBookCard) return;
 
-    const favBook = books.find(b => b.isFavorite) || books.find(b => b.status === 'Reading') || books[0];
+    const favBook = books.find(b => b.isFavorite);
 
     if (favBook) {
-      if (favHeaderBadge) {
-        favHeaderBadge.textContent = favBook.isFavorite ? 'FAVORITE BOOK' : (favBook.status === 'Reading' ? 'CURRENT READ' : 'FEATURED BOOK');
-      }
-      if (favSubbadge) {
-        favSubbadge.textContent = favBook.isFavorite ? 'Curated from Personal Vault' : 'Curated Spotlight';
-      }
+      if (favHeaderBadge) favHeaderBadge.textContent = 'FAVORITE BOOK';
+      if (favSubbadge) favSubbadge.textContent = 'Curated from Personal Vault';
       if (favTitle) favTitle.textContent = favBook.title;
       if (favAuthor) {
         const pagesStr = (parseInt(favBook.pages, 10) || 0).toLocaleString();
@@ -478,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         favBadge.onclick = () => toggleBookStatus(favBook.id);
       }
       if (favCoverImg) {
-        favCoverImg.src = favBook.coverImage || favBook.cover || './assets/midnight-library.jpg';
+        favCoverImg.src = favBook.coverImage || favBook.cover || './assets/empty-book.svg';
         favCoverImg.alt = `${favBook.title} Cover`;
         favCoverImg.style.display = 'block';
       }
@@ -487,27 +447,25 @@ document.addEventListener('DOMContentLoaded', () => {
         favViewBtn.onclick = () => switchView('catalog');
       }
     } else {
-      if (favHeaderBadge) favHeaderBadge.textContent = 'VAULT EMPTY';
-      if (favSubbadge) favSubbadge.textContent = 'No books in collection';
-      if (favTitle) favTitle.textContent = 'No Favorite Book Yet';
-      if (favAuthor) favAuthor.textContent = 'Your reading vault currently has no books recorded.';
-      const emptyNote = 'Add books in My Library and mark your favorite titles to showcase them here on the dashboard.';
+      if (favHeaderBadge) favHeaderBadge.textContent = 'FAVORITE BOOK';
+      if (favSubbadge) favSubbadge.textContent = 'Personal Vault';
+      if (favTitle) favTitle.textContent = 'No Favorite Book Selected';
+      if (favAuthor) favAuthor.textContent = 'Mark your favorite book in My Library';
+      const emptyNote = 'You have not marked any book as your favorite yet. Click the heart or edit a book in My Library to showcase it here.';
       if (favSynopsis) favSynopsis.textContent = emptyNote;
       if (favBadge) {
-        favBadge.textContent = 'No Status';
+        favBadge.textContent = 'None';
         favBadge.className = 'status-pill';
         favBadge.onclick = null;
       }
       if (favCoverImg) {
-        favCoverImg.src = './assets/midnight-library.jpg';
-        favCoverImg.alt = 'No Books';
+        favCoverImg.src = './assets/empty-book.svg';
+        favCoverImg.alt = 'No Favorite Book Selected';
+        favCoverImg.style.display = 'block';
       }
       if (favViewBtn) {
-        favViewBtn.textContent = '+ Add a Book →';
-        favViewBtn.onclick = () => {
-          resetBookForm();
-          switchView('add-book');
-        };
+        favViewBtn.textContent = 'Browse Library →';
+        favViewBtn.onclick = () => switchView('catalog');
       }
     }
   }
@@ -746,9 +704,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const existingCover = book.coverImage || book.cover || '';
     currentUploadedCover = existingCover;
 
-    if (formCoverUrl) {
-      formCoverUrl.value = (existingCover && !existingCover.startsWith('data:')) ? existingCover : '';
-    }
     if (existingCover && coverPreviewImg && coverPreviewRow) {
       coverPreviewImg.src = existingCover;
       coverPreviewRow.style.display = 'flex';
@@ -768,7 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
       formDate.value = new Date().toISOString().split('T')[0];
     }
     if (formSynopsis) formSynopsis.value = '';
-    if (formCoverUrl) formCoverUrl.value = '';
     if (formCoverFile) formCoverFile.value = '';
     newlyPickedCoverFile = '';
     currentUploadedCover = '';
@@ -787,7 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const date = formDate.value || new Date().toISOString().split('T')[0];
       const status = formStatus.value;
       const synopsis = formSynopsis ? formSynopsis.value.trim() : '';
-      const coverUrl = formCoverUrl ? formCoverUrl.value.trim() : '';
       const editId = editingBookIdInput.value ? parseInt(editingBookIdInput.value, 10) : null;
 
       if (!title || !author) {
@@ -798,15 +751,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (editId) {
         const index = books.findIndex(b => b.id === editId);
         if (index !== -1) {
-          let finalCover = './assets/midnight-library.jpg';
+          let finalCover = './assets/empty-book.svg';
           if (newlyPickedCoverFile) {
             finalCover = newlyPickedCoverFile;
-          } else if (coverUrl) {
-            finalCover = coverUrl;
           } else if (currentUploadedCover) {
             finalCover = currentUploadedCover;
           } else if (books[index]) {
-            finalCover = books[index].coverImage || books[index].cover || './assets/midnight-library.jpg';
+            finalCover = books[index].coverImage || books[index].cover || './assets/empty-book.svg';
           }
 
           books[index] = {
@@ -825,11 +776,9 @@ document.addEventListener('DOMContentLoaded', () => {
           showToast(`Updated "${title}"`);
         }
       } else {
-        let finalCover = './assets/midnight-library.jpg';
+        let finalCover = './assets/empty-book.svg';
         if (newlyPickedCoverFile) {
           finalCover = newlyPickedCoverFile;
-        } else if (coverUrl) {
-          finalCover = coverUrl;
         } else if (currentUploadedCover) {
           finalCover = currentUploadedCover;
         }

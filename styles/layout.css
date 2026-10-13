@@ -1,0 +1,445 @@
+/* ==========================================================================
+   APP LAYOUT (Full width centered canvas)
+   ========================================================================== */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 250px;
+  background-color: var(--bg-sidebar);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 24px;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background-color: var(--accent-gold);
+  color: #142436;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-group-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-sidebar-muted);
+  padding: 10px 12px 6px;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-sidebar-muted);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-item:hover {
+  background: var(--bg-sidebar-hover);
+  color: #FFFFFF;
+}
+
+.nav-item.active {
+  background: var(--bg-sidebar-active);
+  color: #FFFFFF;
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-footer-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-top: auto;
+}
+
+.sidebar-footer-card strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.sidebar-footer-card p {
+  font-size: 0.75rem;
+  color: var(--text-sidebar-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   HAMBURGER NAVIGATION DRAWER (Navy Blue #0F2942)
+   ========================================================================== */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 41, 66, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.drawer-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #0F1D2B 0%, #0A141E 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  z-index: 999;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-drawer.active {
+  left: 0;
+}
+
+.drawer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drawer-close {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.drawer-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.drawer-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #8CA0B3;
+  margin-bottom: 10px;
+  padding-left: 6px;
+}
+
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: #D1D9E0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.drawer-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+.drawer-item.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-left: 3px solid #B88B4A;
+}
+
+.drawer-item .nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.drawer-footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  color: #8CA0B3;
+}
+
+/* --- MAIN CONTENT WRAPPER --- */
+.main-content {
+  flex: 1;
+  padding: 24px 32px 64px;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Topbar (Slim, refined, matching frosted floating pill) */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(236, 239, 244, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-pill);
+  padding: 6px 18px;
+  margin: 10px 0 24px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+}
+
+.topbar .brand-title,
+.topbar-brand-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1E293B !important;
+  letter-spacing: -0.01em;
+}
+
+.drawer-top .brand-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Hamburger Toggle Button */
+.hamburger-btn {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3.5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  cursor: pointer;
+  padding: 6px;
+  transition: all 0.2s ease;
+}
+
+.hamburger-btn .bar {
+  width: 14px;
+  height: 2px;
+  background-color: #1E293B;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.hamburger-btn:hover,
+.hamburger-btn.active {
+  background-color: #1E293B;
+  border-color: #1E293B;
+}
+
+.hamburger-btn:hover .bar,
+.hamburger-btn.active .bar {
+  background-color: #FFFFFF;
+}
+
+/* Back Button */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  color: #1E293B;
+  cursor: pointer;
+  padding: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #1E293B;
+  border-color: #1E293B;
+  color: #FFFFFF;
+  transform: translateX(-2px);
+}
+
+.breadcrumbs {
+  font-size: 0.82rem;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs .sep {
+  margin: 0 6px;
+  color: #94A3B8;
+}
+
+.breadcrumbs .current {
+  color: #1E293B;
+  font-weight: 600;
+}
+
+.breadcrumb-home-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: #64748B;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.breadcrumb-home-btn:hover {
+  color: #1E293B;
+  text-decoration: underline;
+}
+
+.user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1E2D40; border: 1px solid var(--border-color);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Section Header */
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.header-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-tag);
+  margin-bottom: 4px;
+}
+
+.header-title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.header-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+/* View Sections Toggle */
+.view-section {
+  display: none;
+}
+
+.view-section.active {
+  display: block;
+}
