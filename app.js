@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
       date: "2026-10-08",
       status: "Reading",
       isFavorite: false,
-      cover: "./assets/midnight-library.jpg",
-      coverImage: "./assets/midnight-library.jpg",
+      cover: "./assets/empty-book.svg",
+      coverImage: "./assets/empty-book.svg",
       synopsis: "Between life and death there is a library where shelves go on forever. Nora Seed is given the chance to undo her regrets and explore the alternate lives she could have lived."
     },
     {
@@ -23,26 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
       date: "2026-10-10",
       status: "To Read",
       isFavorite: true,
-      cover: "./assets/computer-systems.jpg",
-      coverImage: "./assets/computer-systems.jpg",
+      cover: "./assets/empty-book.svg",
+      coverImage: "./assets/empty-book.svg",
       synopsis: "A programmer's perspective on computer architecture, memory hierarchy, machine-level code, and concurrent systems."
     }
   ];
 
   let books = JSON.parse(localStorage.getItem('lilian_vault_books')) || defaultBooks;
-  // Ensure default books have synopses and correct covers in existing localStorage
+  // Sanitize any deprecated image filenames in existing localStorage
   books.forEach(b => {
-    if (b.title && b.title.includes('Computer Systems')) {
-      b.cover = './assets/computer-systems.jpg';
-      b.coverImage = './assets/computer-systems.jpg';
-      if (!b.synopsis) {
-        b.synopsis = "A programmer's perspective on computer architecture, memory hierarchy, machine-level code, and concurrent systems.";
-      }
+    if (b.cover && (b.cover.includes('midnight-library') || b.cover.includes('computer-systems'))) {
+      b.cover = './assets/empty-book.svg';
     }
-    if (b.title && b.title.includes('Midnight Library')) {
-      if (!b.synopsis) {
-        b.synopsis = "Between life and death there is a library where shelves go on forever. Nora Seed is given the chance to undo her regrets and explore the alternate lives she could have lived.";
-      }
+    if (b.coverImage && (b.coverImage.includes('midnight-library') || b.coverImage.includes('computer-systems'))) {
+      b.coverImage = './assets/empty-book.svg';
     }
   });
 
@@ -558,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td colspan="7">
                   <div class="inline-book-detail">
                     <div class="inline-cover-wrap">
-                      <img src="${book.coverImage || book.cover || './assets/midnight-library.jpg'}" alt="Cover" class="inline-cover-img">
+                      <img src="${book.coverImage || book.cover || './assets/empty-book.svg'}" alt="Cover" class="inline-cover-img">
                     </div>
                     <div class="inline-info">
                       <h4>${escapeHtml(book.title)}</h4>
@@ -600,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${isExpanded ? `
                 <div class="mobile-expanded-detail" style="padding-top: 14px; border-top: 1px solid #E5E7EB; margin-top: 8px;">
                   <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px;">
-                    <img src="${book.coverImage || book.cover || './assets/midnight-library.jpg'}" style="width: 70px; height: 105px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
+                    <img src="${book.coverImage || book.cover || './assets/empty-book.svg'}" style="width: 70px; height: 105px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
                     <div style="font-size: 0.88rem; color: #1F2937; flex: 1;">
                       <p style="margin-bottom: 4px;"><strong>Added:</strong> ${escapeHtml(book.date || '-')}</p>
                       <p style="margin-bottom: 4px;"><strong>Status:</strong> ${escapeHtml(book.status)}</p>
