@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const coverPreviewImg = document.getElementById('cover-preview-img');
   const btnRemoveCover = document.getElementById('btn-remove-cover');
   const formIsFavorite = document.getElementById('form-is-favorite');
+  let newlyPickedCoverFile = '';
   let currentUploadedCover = '';
 
   const settingsForm = document.getElementById('settings-form');
@@ -118,19 +119,38 @@ document.addEventListener('DOMContentLoaded', () => {
       if (file) {
         const reader = new FileReader();
         reader.onload = (loadEvent) => {
-          currentUploadedCover = loadEvent.target.result;
-          if (coverPreviewImg) coverPreviewImg.src = currentUploadedCover;
+          newlyPickedCoverFile = loadEvent.target.result;
+          currentUploadedCover = newlyPickedCoverFile;
+          if (coverPreviewImg) coverPreviewImg.src = newlyPickedCoverFile;
           if (coverPreviewRow) coverPreviewRow.style.display = 'flex';
+          if (formCoverUrl) formCoverUrl.value = '';
         };
         reader.readAsDataURL(file);
       }
     });
   }
 
+  if (formCoverUrl) {
+    formCoverUrl.addEventListener('input', () => {
+      const val = formCoverUrl.value.trim();
+      if (val) {
+        newlyPickedCoverFile = '';
+        currentUploadedCover = val;
+        if (coverPreviewImg) coverPreviewImg.src = val;
+        if (coverPreviewRow) coverPreviewRow.style.display = 'flex';
+      } else if (!newlyPickedCoverFile) {
+        if (coverPreviewRow) coverPreviewRow.style.display = 'none';
+        if (coverPreviewImg) coverPreviewImg.src = '';
+      }
+    });
+  }
+
   if (btnRemoveCover) {
     btnRemoveCover.addEventListener('click', () => {
+      newlyPickedCoverFile = '';
       currentUploadedCover = '';
       if (formCoverFile) formCoverFile.value = '';
+      if (formCoverUrl) formCoverUrl.value = '';
       if (coverPreviewImg) coverPreviewImg.src = '';
       if (coverPreviewRow) coverPreviewRow.style.display = 'none';
     });
@@ -282,27 +302,64 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateHomeHeroStats() {
     const spotlightTitle = document.getElementById('home-spotlight-title');
     const spotlightAuthor = document.getElementById('home-spotlight-author');
-    const spotlightQuote = document.getElementById('home-spotlight-quote');
-    const spotlightSynopsis = document.getElementById('home-spotlight-synopsis');
+    const spotlightSynopsis = document.getElementById('home-spotlight-synopsis') || document.getElementById('home-spotlight-quote');
     const spotlightImg = document.getElementById('home-spotlight-img');
     const spotlightTag = document.getElementById('home-spotlight-tag');
+    const spotlightViewBtn = document.getElementById('home-spotlight-view-btn');
 
-    const activeRead = books.find(b => b.status === 'Reading') || books.find(b => b.isFavorite) || books[0];
-    if (activeRead && spotlightTitle) {
+    if (!spotlightTitle) return;
+
+    const activeRead = books.find(b => b.status === 'Reading');
+
+    if (activeRead) {
       spotlightTitle.textContent = activeRead.title;
       if (spotlightAuthor) spotlightAuthor.textContent = `by ${activeRead.author} • ${activeRead.tag || 'General'}`;
-      if (spotlightTag) {
-        spotlightTag.textContent = activeRead.status === 'Reading' ? 'Currently Reading' : (activeRead.isFavorite ? 'Favorite Book' : 'Featured Book');
-      }
-      const synopsisText = activeRead.synopsis || 'No synopsis added yet.';
-      if (spotlightSynopsis) {
-        spotlightSynopsis.textContent = synopsisText;
-      } else if (spotlightQuote) {
-        spotlightQuote.textContent = synopsisText;
-      }
+      if (spotlightTag) spotlightTag.textContent = 'Currently Reading';
+      const synopsisText = activeRead.synopsis || 'No synopsis added yet for this book.';
+      if (spotlightSynopsis) spotlightSynopsis.textContent = synopsisText;
       const coverSrc = activeRead.coverImage || activeRead.cover || './assets/midnight-library.jpg';
       if (spotlightImg) {
         spotlightImg.src = coverSrc;
+        spotlightImg.alt = `${activeRead.title} Cover`;
+        spotlightImg.style.display = 'block';
+      }
+      if (spotlightViewBtn) {
+        spotlightViewBtn.textContent = 'View in Library →';
+        spotlightViewBtn.onclick = () => switchView('catalog');
+      }
+    } else if (books.length > 0) {
+      const fallbackBook = books.find(b => b.isFavorite) || books[0];
+      spotlightTitle.textContent = fallbackBook.title;
+      if (spotlightAuthor) spotlightAuthor.textContent = `by ${fallbackBook.author} • ${fallbackBook.tag || 'General'}`;
+      if (spotlightTag) spotlightTag.textContent = fallbackBook.isFavorite ? 'Favorite Book' : 'Featured Book';
+      const synopsisText = fallbackBook.synopsis || 'Set this book or any other to "Reading" in My Library to track your current read.';
+      if (spotlightSynopsis) spotlightSynopsis.textContent = synopsisText;
+      const coverSrc = fallbackBook.coverImage || fallbackBook.cover || './assets/midnight-library.jpg';
+      if (spotlightImg) {
+        spotlightImg.src = coverSrc;
+        spotlightImg.alt = `${fallbackBook.title} Cover`;
+        spotlightImg.style.display = 'block';
+      }
+      if (spotlightViewBtn) {
+        spotlightViewBtn.textContent = 'View in Library →';
+        spotlightViewBtn.onclick = () => switchView('catalog');
+      }
+    } else {
+      spotlightTitle.textContent = 'No Books In Vault';
+      if (spotlightAuthor) spotlightAuthor.textContent = 'Add your first book to begin reading';
+      if (spotlightTag) spotlightTag.textContent = 'Personal Reading Vault';
+      const emptyText = 'Your vault is currently empty. Click below to add a book to your collection.';
+      if (spotlightSynopsis) spotlightSynopsis.textContent = emptyText;
+      if (spotlightImg) {
+        spotlightImg.src = './assets/midnight-library.jpg';
+        spotlightImg.alt = 'No Books Available';
+      }
+      if (spotlightViewBtn) {
+        spotlightViewBtn.textContent = '+ Add a Book';
+        spotlightViewBtn.onclick = () => {
+          resetBookForm();
+          switchView('add-book');
+        };
       }
     }
   }
@@ -347,6 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('lilian_reader_goal', readerGoal);
     localStorage.setItem('lilian_reader_motto', readerMotto);
     updateHomeHeroStats();
+    renderDashboard();
+    renderCatalog();
   }
 
   function matchesSearch(text, query, useRegex, isCaseSensitive) {
@@ -384,17 +443,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }).length;
     if (statAddedWeek) statAddedWeek.textContent = addedWeekCount.toString();
 
-    const favBook = books.find(b => b.isFavorite) || books[0];
+    const favBookCard = document.getElementById('favorite-book-card');
+    const favHeaderBadge = document.getElementById('favorite-card-header-badge');
+    const favSubbadge = document.getElementById('favorite-card-subbadge');
     const favTitle = document.getElementById('favorite-book-title');
     const favAuthor = document.getElementById('favorite-book-author');
-    const favQuote = document.getElementById('favorite-book-quote');
+    const favSynopsis = document.getElementById('favorite-book-synopsis') || document.getElementById('favorite-book-quote');
     const favBadge = document.getElementById('favorite-book-badge');
+    const favCoverImg = document.getElementById('favorite-cover-img');
+    const favViewBtn = document.getElementById('fav-view-library-btn');
 
-    if (favBook && favTitle) {
-      favTitle.textContent = favBook.title;
-      if (favAuthor) favAuthor.textContent = `by ${favBook.author} • ${favBook.pages} pages • ${favBook.tag || 'General'}`;
-      if (favQuote && favBook.quote) favQuote.textContent = `"${favBook.quote}"`;
-      if (favBadge) favBadge.textContent = favBook.status;
+    if (!favBookCard) return;
+
+    const favBook = books.find(b => b.isFavorite) || books.find(b => b.status === 'Reading') || books[0];
+
+    if (favBook) {
+      if (favHeaderBadge) {
+        favHeaderBadge.textContent = favBook.isFavorite ? 'FAVORITE BOOK' : (favBook.status === 'Reading' ? 'CURRENT READ' : 'FEATURED BOOK');
+      }
+      if (favSubbadge) {
+        favSubbadge.textContent = favBook.isFavorite ? 'Curated from Personal Vault' : 'Curated Spotlight';
+      }
+      if (favTitle) favTitle.textContent = favBook.title;
+      if (favAuthor) {
+        const pagesStr = (parseInt(favBook.pages, 10) || 0).toLocaleString();
+        favAuthor.textContent = `by ${favBook.author} • ${pagesStr} pages • ${favBook.tag || 'General'}`;
+      }
+      const synopsisText = favBook.synopsis || 'No synopsis added yet for this book.';
+      if (favSynopsis) favSynopsis.textContent = synopsisText;
+      if (favBadge) {
+        favBadge.textContent = favBook.status || 'To Read';
+        const statusSlug = (favBook.status || 'toread').toLowerCase().replace(/\s+/g, '');
+        favBadge.className = `btn-toggle-status status-pill status-${statusSlug}`;
+        favBadge.onclick = () => toggleBookStatus(favBook.id);
+      }
+      if (favCoverImg) {
+        favCoverImg.src = favBook.coverImage || favBook.cover || './assets/midnight-library.jpg';
+        favCoverImg.alt = `${favBook.title} Cover`;
+        favCoverImg.style.display = 'block';
+      }
+      if (favViewBtn) {
+        favViewBtn.textContent = 'View in Library →';
+        favViewBtn.onclick = () => switchView('catalog');
+      }
+    } else {
+      if (favHeaderBadge) favHeaderBadge.textContent = 'VAULT EMPTY';
+      if (favSubbadge) favSubbadge.textContent = 'No books in collection';
+      if (favTitle) favTitle.textContent = 'No Favorite Book Yet';
+      if (favAuthor) favAuthor.textContent = 'Your reading vault currently has no books recorded.';
+      const emptyNote = 'Add books in My Library and mark your favorite titles to showcase them here on the dashboard.';
+      if (favSynopsis) favSynopsis.textContent = emptyNote;
+      if (favBadge) {
+        favBadge.textContent = 'No Status';
+        favBadge.className = 'status-pill';
+        favBadge.onclick = null;
+      }
+      if (favCoverImg) {
+        favCoverImg.src = './assets/midnight-library.jpg';
+        favCoverImg.alt = 'No Books';
+      }
+      if (favViewBtn) {
+        favViewBtn.textContent = '+ Add a Book →';
+        favViewBtn.onclick = () => {
+          resetBookForm();
+          switchView('add-book');
+        };
+      }
     }
   }
 
@@ -628,15 +742,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formSynopsis) formSynopsis.value = book.synopsis || '';
     if (formIsFavorite) formIsFavorite.checked = !!book.isFavorite;
 
-    currentUploadedCover = book.coverImage || book.cover || '';
+    newlyPickedCoverFile = '';
+    const existingCover = book.coverImage || book.cover || '';
+    currentUploadedCover = existingCover;
+
     if (formCoverUrl) {
-      formCoverUrl.value = (currentUploadedCover && !currentUploadedCover.startsWith('data:')) ? currentUploadedCover : '';
+      formCoverUrl.value = (existingCover && !existingCover.startsWith('data:')) ? existingCover : '';
     }
-    if (currentUploadedCover && coverPreviewImg && coverPreviewRow) {
-      coverPreviewImg.src = currentUploadedCover;
+    if (existingCover && coverPreviewImg && coverPreviewRow) {
+      coverPreviewImg.src = existingCover;
       coverPreviewRow.style.display = 'flex';
     } else if (coverPreviewRow) {
       coverPreviewRow.style.display = 'none';
+      if (coverPreviewImg) coverPreviewImg.src = '';
     }
 
     switchView('add-book');
@@ -651,6 +769,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (formSynopsis) formSynopsis.value = '';
     if (formCoverUrl) formCoverUrl.value = '';
+    if (formCoverFile) formCoverFile.value = '';
+    newlyPickedCoverFile = '';
     currentUploadedCover = '';
     if (coverPreviewRow) coverPreviewRow.style.display = 'none';
     if (coverPreviewImg) coverPreviewImg.src = '';
@@ -678,7 +798,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (editId) {
         const index = books.findIndex(b => b.id === editId);
         if (index !== -1) {
-          const finalCover = currentUploadedCover || coverUrl || books[index].coverImage || books[index].cover || './assets/midnight-library.jpg';
+          let finalCover = './assets/midnight-library.jpg';
+          if (newlyPickedCoverFile) {
+            finalCover = newlyPickedCoverFile;
+          } else if (coverUrl) {
+            finalCover = coverUrl;
+          } else if (currentUploadedCover) {
+            finalCover = currentUploadedCover;
+          } else if (books[index]) {
+            finalCover = books[index].coverImage || books[index].cover || './assets/midnight-library.jpg';
+          }
+
           books[index] = {
             ...books[index],
             title,
@@ -695,7 +825,15 @@ document.addEventListener('DOMContentLoaded', () => {
           showToast(`Updated "${title}"`);
         }
       } else {
-        const finalCover = currentUploadedCover || coverUrl || './assets/midnight-library.jpg';
+        let finalCover = './assets/midnight-library.jpg';
+        if (newlyPickedCoverFile) {
+          finalCover = newlyPickedCoverFile;
+        } else if (coverUrl) {
+          finalCover = coverUrl;
+        } else if (currentUploadedCover) {
+          finalCover = currentUploadedCover;
+        }
+
         const newBook = {
           id: Date.now(),
           title,

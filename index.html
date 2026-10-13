@@ -140,10 +140,10 @@
             </div>
 
             <div class="spotlight-details-large">
-              <span class="spotlight-simple-tag">Currently Reading</span>
+              <span class="spotlight-simple-tag" id="home-spotlight-tag">Currently Reading</span>
               <h2 class="spotlight-title-large" id="home-spotlight-title">The Midnight Library</h2>
               <p class="spotlight-author-large" id="home-spotlight-author">by Matt Haig • Fiction</p>
-              <p class="spotlight-quote-large" id="home-spotlight-quote">
+              <p class="spotlight-quote-large" id="home-spotlight-synopsis">
                 &ldquo;Between life and death there is a library where shelves go on forever. Every book provides a chance to try another life.&rdquo;
               </p>
               <div class="spotlight-footer-large">
@@ -180,18 +180,25 @@
           </div>
         </div>
 
-        <div class="card favorite-book-card" id="favorite-book-card" style="margin-top: 24px;">
-          <div class="favorite-card-badge">FAVORITE BOOK</div>
+        <!-- Twice-Long Favorite Book Showcase Card -->
+        <div class="card favorite-book-card" id="favorite-book-card">
           <div class="favorite-card-content">
+            <div class="favorite-cover-preview">
+              <img src="./assets/computer-systems.jpg" alt="Favorite Book Cover" class="favorite-cover-img" id="favorite-cover-img">
+            </div>
             <div class="favorite-card-details">
-              <h2 class="favorite-book-title" id="favorite-book-title">The Midnight Library</h2>
-              <div class="favorite-book-meta" id="favorite-book-author">by Matt Haig • 288 pages • Fiction</div>
-              <p class="favorite-book-quote" id="favorite-book-quote" style="font-style: normal; color: #475569; margin: 10px 0;">
-                Between life and death there is a library where shelves go on forever. Nora Seed is given the chance to undo her regrets and explore the alternate lives she could have lived.
+              <div class="favorite-card-badge-row">
+                <span class="favorite-card-badge" id="favorite-card-header-badge">FAVORITE BOOK</span>
+                <span class="favorite-card-subbadge" id="favorite-card-subbadge">Curated from Personal Vault</span>
+              </div>
+              <h2 class="favorite-book-title" id="favorite-book-title">Computer Systems</h2>
+              <div class="favorite-book-meta" id="favorite-book-author">by Randal Bryant &amp; David O'Hallaron • 1,104 pages • Systems</div>
+              <p class="favorite-book-synopsis" id="favorite-book-synopsis">
+                A programmer's perspective on computer architecture, memory hierarchy, machine-level code, and concurrent systems.
               </p>
-              <div class="favorite-card-actions" style="margin-top: 14px;">
-                <button type="button" class="btn-toggle-status status-pill" id="favorite-book-badge">Favorite</button>
-                <button type="button" class="btn-link-action" id="fav-view-library-btn">View in Library &rarr;</button>
+              <div class="favorite-card-actions">
+                <button type="button" class="btn-toggle-status status-pill" id="favorite-book-badge" title="Click to cycle status">To Read</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="fav-view-library-btn">View in Library &rarr;</button>
               </div>
             </div>
           </div>
