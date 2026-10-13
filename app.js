@@ -1,11 +1,5 @@
-// =============================================================================
-// Book & Notes Vault — Lilian's Application Logic
-// Simple, straightforward JavaScript
-// =============================================================================
-
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- 1. Initial State & LocalStorage ---
   const defaultBooks = [
     {
       id: 1,
@@ -14,54 +8,47 @@ document.addEventListener('DOMContentLoaded', () => {
       pages: 288,
       tag: "Fiction",
       date: "2026-10-08",
-      status: "Reading"
+      status: "Reading",
+      cover: "./assets/midnight-library.jpg",
+      quote: "Between life and death there is a library where shelves go on forever. Every book provides a chance to try another life."
+    },
+    {
+      id: 2,
+      title: "Computer Systems",
+      author: "Randal Bryant & David O'Hallaron",
+      pages: 1104,
+      tag: "Systems",
+      date: "2026-10-10",
+      status: "To Read",
+      cover: "./assets/midnight-library.jpg",
+      quote: "A programmer's perspective on computer architecture, memory hierarchy, and hardware-software interface."
     }
   ];
 
   let books = JSON.parse(localStorage.getItem('lilian_vault_books')) || defaultBooks;
-  let readingTarget = parseInt(localStorage.getItem('lilian_reading_target'), 10) || 50;
+  let readerName = localStorage.getItem('lilian_reader_name') || 'Lilian';
+  let defaultViewSetting = localStorage.getItem('lilian_default_view') || 'home';
 
-  // Active view tracker (default starts on Lillian's Home Page)
   let currentView = 'home';
+  let expandedBookIds = new Set();
 
-  // --- 2. DOM Elements ---
   const navItems = document.querySelectorAll('.sidebar .nav-item');
   const drawerItems = document.querySelectorAll('.drawer-item');
   const viewSections = document.querySelectorAll('.view-section');
   const breadcrumbCurrent = document.querySelector('#breadcrumb-text .current');
   const goAddBtns = document.querySelectorAll('.btn-go-add');
 
-  // Hamburger & Drawer elements
   const hamburgerBtn = document.getElementById('hamburger-btn');
   const navDrawer = document.getElementById('nav-drawer');
   const drawerBackdrop = document.getElementById('drawer-backdrop');
   const drawerCloseBtn = document.getElementById('drawer-close-btn');
+  const btnBack = document.getElementById('btn-back');
 
-  // Home Page elements
-  const homeBtnLibrary = document.getElementById('home-btn-library');
-  const homeBtnDashboard = document.getElementById('home-btn-dashboard');
-  const homeBtnAdd = document.getElementById('home-btn-add');
-  const homeNavCards = document.querySelectorAll('.home-nav-card');
-
-  // Dashboard elements
-  const goalCountLabel = document.getElementById('goal-count-label');
-  const goalProgressBar = document.getElementById('goal-progress-bar');
-  const goalStatusText = document.getElementById('goal-status-text');
   const statCurrentRead = document.getElementById('stat-current-read');
   const statTotalPages = document.getElementById('stat-total-pages');
   const statBooksRead = document.getElementById('stat-books-read');
-  const statCommonTag = document.getElementById('stat-common-tag');
   const statAddedWeek = document.getElementById('stat-added-week');
-  const statPageTarget = document.getElementById('stat-page-target');
-  const dashSearchInput = document.getElementById('dash-search-input');
-  const dashRegexCheck = document.getElementById('dash-regex-check');
-  const dashCaseCheck = document.getElementById('dash-case-check');
-  const collectionHeading = document.getElementById('collection-heading');
-  const dashboardBookGrid = document.getElementById('dashboard-book-grid');
-  const genreCheckboxes = document.querySelectorAll('.filter-genre-checkbox');
-  const statusCheckboxes = document.querySelectorAll('.filter-status-checkbox');
 
-  // Catalog elements
   const catalogSearchInput = document.getElementById('catalog-search-input');
   const catalogRegexCheck = document.getElementById('catalog-regex-check');
   const catalogCaseCheck = document.getElementById('catalog-case-check');
@@ -70,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const catalogFilterStatus = document.getElementById('catalog-filter-status');
   const tableCountLabel = document.getElementById('table-count-label');
   const catalogTableBody = document.getElementById('catalog-table-body');
+  const mobileBooksContainer = document.getElementById('mobile-books-container');
 
-  // Form elements
   const bookForm = document.getElementById('book-form');
   const formViewTitle = document.getElementById('form-view-title');
   const editingBookIdInput = document.getElementById('editing-book-id');
@@ -89,22 +76,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const formIsFavorite = document.getElementById('form-is-favorite');
   let currentUploadedCover = '';
 
-  // Settings elements
   const settingsForm = document.getElementById('settings-form');
-  const prefBookTarget = document.getElementById('pref-book-target');
+  const prefReaderName = document.getElementById('pref-reader-name');
+  const prefDefaultView = document.getElementById('pref-default-view');
+  const btnResetLibrary = document.getElementById('btn-reset-library');
+
   const btnExportJson = document.getElementById('btn-export-json');
   const btnImportTrigger = document.getElementById('btn-import-trigger');
   const importFileInput = document.getElementById('import-file-input');
   const toast = document.getElementById('toast');
 
-  // Set default date in form to today
   if (formDate) {
     const today = new Date().toISOString().split('T')[0];
     formDate.value = today;
   }
 
-  
-  // Cover image upload listener
   if (formCoverFile) {
     formCoverFile.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -129,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Hamburger Drawer Helpers ---
   function openDrawer() {
     if (navDrawer && drawerBackdrop && hamburgerBtn) {
       navDrawer.classList.add('active');
@@ -156,21 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (drawerCloseBtn) {
-    drawerCloseBtn.addEventListener('click', closeDrawer);
-  }
+  if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+  if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
 
-  if (drawerBackdrop) {
-    drawerBackdrop.addEventListener('click', closeDrawer);
-  }
-
-  // --- 3. View Switching Function with Browser History & Back/Forward Support ---
   function switchView(viewName, pushHistory = true) {
     if (!viewName) viewName = 'home';
     currentView = viewName;
     closeDrawer();
 
-    // Push state to browser history so browser Back/Forward arrows work!
     if (pushHistory) {
       if (viewName === 'home') {
         history.pushState({ view: 'home' }, '', window.location.pathname + window.location.search);
@@ -179,34 +157,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Toggle on-screen Back button
-    const btnBack = document.getElementById('btn-back');
     if (btnBack) {
       btnBack.style.display = viewName === 'home' ? 'none' : 'inline-flex';
     }
 
-    // Update active nav button in sidebar
     navItems.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === viewName);
     });
 
-    // Update active nav button in drawer
     drawerItems.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === viewName);
     });
 
-    // Update active section
     viewSections.forEach(section => {
       section.classList.toggle('active', section.id === `view-${viewName}`);
     });
 
-    // Update breadcrumb
     const titles = {
       'home': 'Home',
       'dashboard': 'Dashboard',
       'catalog': 'My Library',
       'add-book': 'Add a book',
-      'settings': 'Settings'
+      'settings': 'Settings',
+      'about': 'About'
     };
 
     const breadcrumbSub = document.getElementById('breadcrumb-sub');
@@ -214,18 +187,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (breadcrumbHomeBtn && breadcrumbSub) {
       if (viewName === 'home') {
         breadcrumbHomeBtn.style.fontWeight = '600';
-        breadcrumbHomeBtn.style.color = 'var(--text-main)';
+        breadcrumbHomeBtn.style.color = '#111827';
         breadcrumbSub.innerHTML = '';
       } else {
         breadcrumbHomeBtn.style.fontWeight = '400';
-        breadcrumbHomeBtn.style.color = 'var(--text-muted)';
+        breadcrumbHomeBtn.style.color = '#6B7280';
         breadcrumbSub.innerHTML = `<span class="sep">/</span> <span class="current">${titles[viewName] || viewName}</span>`;
       }
     } else if (breadcrumbCurrent) {
       breadcrumbCurrent.textContent = titles[viewName] || 'Home';
     }
 
-    // Refresh view data
     if (viewName === 'home') {
       updateHomeHeroStats();
     } else if (viewName === 'dashboard') {
@@ -234,12 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
       renderCatalog();
     }
 
-    // Scroll main window to top
     const mainContent = document.querySelector('.main-content');
     if (mainContent) mainContent.scrollTop = 0;
   }
 
-  // Handle browser Back / Forward navigation arrows!
   window.addEventListener('popstate', (e) => {
     const target = (e.state && e.state.view) || window.location.hash.replace('#', '') || 'home';
     switchView(target, false);
@@ -252,8 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Dedicated in-screen Back button click
-  const btnBack = document.getElementById('btn-back');
   if (btnBack) {
     btnBack.addEventListener('click', () => {
       if (window.history.length > 1) {
@@ -264,62 +232,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Clickable Brand title goes Home
   const brandHomeLink = document.getElementById('brand-home-link');
   if (brandHomeLink) {
     brandHomeLink.addEventListener('click', () => switchView('home'));
   }
 
-  // Clickable Breadcrumb Home button goes Home
   const breadcrumbHomeBtn = document.getElementById('breadcrumb-home-btn');
   if (breadcrumbHomeBtn) {
     breadcrumbHomeBtn.addEventListener('click', () => switchView('home'));
   }
 
-  // Sidebar Nav click handlers
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetView = btn.dataset.view;
-      if (targetView === 'add-book') {
-        resetBookForm();
-      }
+      if (targetView === 'add-book') resetBookForm();
       switchView(targetView);
     });
   });
 
-  // Drawer Nav click handlers
   drawerItems.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetView = btn.dataset.view;
-      if (targetView === 'add-book') {
-        resetBookForm();
-      }
+      if (targetView === 'add-book') resetBookForm();
       switchView(targetView);
     });
   });
 
-  // --- Home Page Hero Interactions & Dynamic Stats ---
   function updateHomeHeroStats() {
-    const homeStatBooks = document.getElementById('home-stat-books');
-    const homeStatPages = document.getElementById('home-stat-pages');
-    const homeStatGoal = document.getElementById('home-stat-goal');
-
-    const completedReads = books.filter(b => b.status === 'Read').length;
-    const goalPercent = Math.min(100, Math.round((completedReads / readingTarget) * 100));
-    const totalPages = books.reduce((acc, b) => acc + (parseInt(b.pages, 10) || 0), 0);
-
-    if (homeStatBooks) homeStatBooks.textContent = books.length.toString();
-    if (homeStatPages) homeStatPages.textContent = totalPages.toLocaleString();
-    if (homeStatGoal) homeStatGoal.textContent = `${goalPercent}%`;
-
     const spotlightTitle = document.getElementById('home-spotlight-title');
     const spotlightAuthor = document.getElementById('home-spotlight-author');
+    const spotlightQuote = document.getElementById('home-spotlight-quote');
     const spotlightImg = document.getElementById('home-spotlight-img');
 
     const activeRead = books.find(b => b.status === 'Reading') || books[0];
     if (activeRead && spotlightTitle) {
       spotlightTitle.textContent = activeRead.title;
-      if (spotlightAuthor) spotlightAuthor.textContent = `by ${activeRead.author} • ${activeRead.tag || 'Literature'}`;
+      if (spotlightAuthor) spotlightAuthor.textContent = `by ${activeRead.author} • ${activeRead.tag || 'General'}`;
+      if (activeRead.quote && spotlightQuote) {
+        spotlightQuote.textContent = `"${activeRead.quote}"`;
+      }
       if (activeRead.cover && spotlightImg) {
         spotlightImg.src = activeRead.cover;
       }
@@ -327,21 +278,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const homeCtaLibrary = document.getElementById('home-cta-library');
-  if (homeCtaLibrary) {
-    homeCtaLibrary.addEventListener('click', () => switchView('catalog'));
-  }
+  if (homeCtaLibrary) homeCtaLibrary.addEventListener('click', () => switchView('catalog'));
 
   const homeCtaDashboard = document.getElementById('home-cta-dashboard');
-  if (homeCtaDashboard) {
-    homeCtaDashboard.addEventListener('click', () => switchView('dashboard'));
-  }
+  if (homeCtaDashboard) homeCtaDashboard.addEventListener('click', () => switchView('dashboard'));
 
   const homeSpotlightViewBtn = document.getElementById('home-spotlight-view-btn');
-  if (homeSpotlightViewBtn) {
-    homeSpotlightViewBtn.addEventListener('click', () => switchView('catalog'));
-  }
+  if (homeSpotlightViewBtn) homeSpotlightViewBtn.addEventListener('click', () => switchView('catalog'));
 
-  // "+ Add book" CTA buttons
   goAddBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       resetBookForm();
@@ -349,7 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Cancel form button
   if (btnCancelForm) {
     btnCancelForm.addEventListener('click', () => {
       resetBookForm();
@@ -357,163 +300,52 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Favorite spotlight card view in library button
   const favViewBtn = document.getElementById('fav-view-library-btn');
-  if (favViewBtn) {
-    favViewBtn.addEventListener('click', () => {
-      switchView('catalog');
-    });
-  }
+  if (favViewBtn) favViewBtn.addEventListener('click', () => switchView('catalog'));
 
-  // Favorite spotlight quick toggle status
-  const favBadgeBtn = document.getElementById('favorite-book-badge');
-  if (favBadgeBtn) {
-    favBadgeBtn.addEventListener('click', () => {
-      const favBook = books.find(b => b.isFavorite) || books.find(b => b.status === 'Reading') || books[0];
-      if (favBook) {
-        toggleBookStatus(favBook.id);
-      }
-    });
-  }
-
-  // --- 4. Toast Notifications ---
   function showToast(message) {
     if (!toast) return;
     toast.textContent = message;
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2800);
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2800);
   }
 
-  // --- 5. Save to LocalStorage ---
   function persistData() {
     localStorage.setItem('lilian_vault_books', JSON.stringify(books));
-    localStorage.setItem('lilian_reading_target', readingTarget.toString());
+    localStorage.setItem('lilian_reader_name', readerName);
+    localStorage.setItem('lilian_default_view', defaultViewSetting);
     updateHomeHeroStats();
   }
 
-  // --- 6. Helper: Search Match with Regex & Case Sensitivity ---
   function matchesSearch(text, query, useRegex, isCaseSensitive) {
     if (!query) return true;
     if (!text) return false;
-
     if (useRegex) {
       try {
         const flags = isCaseSensitive ? '' : 'i';
         const regex = new RegExp(query, flags);
         return regex.test(text);
-      } catch (e) {
-        // Fallback to literal search if regex is invalid
+      } catch (err) {
+        return false;
       }
     }
-
-    if (!isCaseSensitive) {
-      return text.toLowerCase().includes(query.toLowerCase());
-    }
-    return text.includes(query);
+    const t = isCaseSensitive ? text : text.toLowerCase();
+    const q = isCaseSensitive ? query : query.toLowerCase();
+    return t.includes(q);
   }
 
-  // Helper: Status CSS class
-  function getStatusClass(status) {
-    if (status === 'Reading') return 'reading';
-    if (status === 'Read') return 'read';
-    return 'to-read';
-  }
-
-  // Helper: Toggle / Cycle book status (To Read -> Reading -> Read -> To Read)
-  function toggleBookStatus(id) {
-    const book = books.find(b => b.id === id);
-    if (!book) return;
-
-    const cycle = {
-      'To Read': 'Reading',
-      'Reading': 'Read',
-      'Read': 'To Read'
-    };
-    const currentStatus = book.status || 'To Read';
-    const newStatus = cycle[currentStatus] || 'Reading';
-    book.status = newStatus;
-    persistData();
-    renderCatalog();
-    renderDashboard();
-
-    const icon = newStatus === 'Read' ? '✅' : (newStatus === 'Reading' ? '📖' : '⏳');
-    showToast(`${icon} Status updated: "${book.title}" is now ${newStatus}`);
-  }
-
-  // Favorite Book Spotlight Render
-  function renderFavoriteBook() {
-    const favCard = document.getElementById('favorite-book-card');
-    if (!favCard) return;
-
-    const favBook = books.find(b => b.isFavorite) || books.find(b => b.status === 'Reading') || books[0];
-    if (!favBook) {
-      favCard.style.display = 'none';
-      return;
-    }
-    favCard.style.display = 'block';
-
-    const favTitle = document.getElementById('favorite-book-title');
-    const favMeta = document.getElementById('favorite-book-author');
-    const favBadge = document.getElementById('favorite-book-badge');
-    const favCoverPreview = document.getElementById('favorite-cover-preview');
-
-    if (favTitle) favTitle.textContent = favBook.title;
-    if (favMeta) favMeta.textContent = `by ${favBook.author} • ${favBook.pages} pages • ${favBook.tag || 'General'}`;
-    if (favBadge) {
-      favBadge.textContent = favBook.status === 'Reading' ? 'Currently Reading' : favBook.status === 'Read' ? 'Finished Read' : 'To Read';
-      favBadge.className = `btn-toggle-status status-pill ${getStatusClass(favBook.status)}`;
-      favBadge.dataset.id = favBook.id;
-    }
-
-    if (favCoverPreview) {
-      if (favBook.coverImage) {
-        favCoverPreview.innerHTML = `<img src="${favBook.coverImage}" class="favorite-cover-img" alt="${escapeHtml(favBook.title)}">`;
-      } else {
-        favCoverPreview.innerHTML = `<div class="favorite-cloth-cover"><span>FAVORITE</span></div>`;
-      }
-    }
-  }
-
-  // --- 7. Dashboard Render ---
   function renderDashboard() {
-    renderFavoriteBook();
-    // Reading Goal Stats
-    const totalBooks = books.length;
-    const completedReads = books.filter(b => b.status === 'Read').length;
-    const goalPercent = Math.min(100, Math.round((completedReads / readingTarget) * 100));
-    const remaining = Math.max(0, readingTarget - completedReads);
-
-    if (goalCountLabel) goalCountLabel.textContent = `${completedReads}/${readingTarget} books`;
-    if (goalProgressBar) goalProgressBar.style.width = `${goalPercent}%`;
-    if (goalStatusText) goalStatusText.textContent = `${goalPercent}% complete • ${remaining} remaining`;
-
-    // Row 1 Stats
     const currentBook = books.find(b => b.status === 'Reading');
     if (statCurrentRead) statCurrentRead.textContent = currentBook ? currentBook.title : 'None';
 
-    const totalPages = books.reduce((acc, b) => acc + (parseInt(b.pages, 10) || 0), 0);
-    if (statTotalPages) statTotalPages.textContent = totalPages.toString();
+    const completedReads = books.filter(b => b.status === 'Read').length;
     if (statBooksRead) statBooksRead.textContent = completedReads.toString();
 
-    // Row 2 Stats
-    // Most common tag
-    const tagCounts = {};
-    books.forEach(b => {
-      if (b.tag) {
-        tagCounts[b.tag] = (tagCounts[b.tag] || 0) + 1;
-      }
-    });
-    let mostCommon = 'None';
-    let maxCount = 0;
-    for (const [tag, count] of Object.entries(tagCounts)) {
-      if (count > maxCount) {
-        maxCount = count;
-        mostCommon = tag;
-      }
-    }
-    if (statCommonTag) statCommonTag.textContent = mostCommon;
+    const totalPages = books.reduce((acc, b) => acc + (parseInt(b.pages, 10) || 0), 0);
+    if (statTotalPages) statTotalPages.textContent = totalPages.toLocaleString();
 
-    // Added this week (last 7 days)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const addedWeekCount = books.filter(b => {
@@ -522,73 +354,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }).length;
     if (statAddedWeek) statAddedWeek.textContent = addedWeekCount.toString();
 
-    if (statPageTarget) statPageTarget.textContent = `${totalPages} / 15000`;
+    const favBook = books.find(b => b.isFavorite) || books[0];
+    const favTitle = document.getElementById('favorite-book-title');
+    const favAuthor = document.getElementById('favorite-book-author');
+    const favQuote = document.getElementById('favorite-book-quote');
+    const favBadge = document.getElementById('favorite-book-badge');
 
-    // Filter books for dashboard collection
-    const query = dashSearchInput ? dashSearchInput.value.trim() : '';
-    const useRegex = dashRegexCheck ? dashRegexCheck.checked : false;
-    const isCase = dashCaseCheck ? dashCaseCheck.checked : false;
-
-    const selectedGenres = Array.from(genreCheckboxes).filter(cb => cb.checked).map(cb => cb.value.toLowerCase());
-    const selectedStatuses = Array.from(statusCheckboxes).filter(cb => cb.checked).map(cb => cb.value.toLowerCase());
-
-    const filtered = books.filter(book => {
-      const textMatch = matchesSearch(book.title, query, useRegex, isCase) ||
-                         matchesSearch(book.author, query, useRegex, isCase) ||
-                         matchesSearch(book.tag, query, useRegex, isCase);
-
-      const genreMatch = selectedGenres.length === 0 || selectedGenres.includes((book.tag || '').toLowerCase());
-      const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes((book.status || '').toLowerCase());
-
-      return textMatch && genreMatch && statusMatch;
-    });
-
-    if (collectionHeading) {
-      collectionHeading.textContent = `My Book Collection (${filtered.length})`;
+    if (favBook && favTitle) {
+      favTitle.textContent = favBook.title;
+      if (favAuthor) favAuthor.textContent = `by ${favBook.author} • ${favBook.pages} pages • ${favBook.tag || 'General'}`;
+      if (favQuote && favBook.quote) favQuote.textContent = `"${favBook.quote}"`;
+      if (favBadge) favBadge.textContent = favBook.status;
     }
-
-    if (!dashboardBookGrid) return;
-
-    if (filtered.length === 0) {
-      dashboardBookGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--text-muted); background: #FFFFFF; border-radius: var(--radius-md); border: 1px dashed var(--border-color);">
-          No books found matching the current search and filters.
-        </div>
-      `;
-      return;
-    }
-
-    dashboardBookGrid.innerHTML = filtered.map(book => {
-      const statusClass = getStatusClass(book.status);
-
-      const coverMarkup = book.coverImage
-        ? `<div class="book-cover-image-wrap"><img src="${book.coverImage}" class="book-cover-img" alt="${escapeHtml(book.title)}"></div>`
-        : `<div class="book-cover-placeholder"><span>BOOK NOTES</span></div>`;
-
-      return `
-        <article class="book-card" data-id="${book.id}">
-          ${coverMarkup}
-          <h4 class="book-card-title">${escapeHtml(book.title)}</h4>
-          <p class="book-card-meta">${escapeHtml(book.author)} • ${book.pages} pages</p>
-          <button type="button" class="btn-toggle-status status-pill ${statusClass}" data-id="${book.id}" title="Click to cycle status: To Read → Reading → Read">
-            ${escapeHtml(book.status)}
-          </button>
-        </article>
-      `;
-    }).join('');
-
-    // Attach Status Toggle listeners on Dashboard Grid
-    dashboardBookGrid.querySelectorAll('.btn-toggle-status').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = parseInt(e.currentTarget.dataset.id, 10);
-        toggleBookStatus(id);
-      });
-    });
   }
 
-  // --- 8. Catalog Render (Table View) ---
+  function populateCatalogTags() {
+    if (!catalogFilterTag) return;
+    const currentSelected = catalogFilterTag.value || 'All';
+    const tagSet = new Set();
+    books.forEach(b => {
+      if (b.tag && b.tag.trim()) tagSet.add(b.tag.trim());
+    });
+    const tags = Array.from(tagSet).sort();
+    let optionsHtml = `<option value="All">All Tags</option>`;
+    tags.forEach(t => {
+      optionsHtml += `<option value="${escapeHtml(t)}" ${t.toLowerCase() === currentSelected.toLowerCase() ? 'selected' : ''}>${escapeHtml(t)}</option>`;
+    });
+    catalogFilterTag.innerHTML = optionsHtml;
+  }
+
   function renderCatalog() {
+    populateCatalogTags();
+
     const query = catalogSearchInput ? catalogSearchInput.value.trim() : '';
     const useRegex = catalogRegexCheck ? catalogRegexCheck.checked : false;
     const isCase = catalogCaseCheck ? catalogCaseCheck.checked : false;
@@ -597,19 +394,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const tagFilter = catalogFilterTag ? catalogFilterTag.value : 'All';
     const statusFilter = catalogFilterStatus ? catalogFilterStatus.value : 'All';
 
-    // Filter
     let filtered = books.filter(book => {
       const textMatch = matchesSearch(book.title, query, useRegex, isCase) ||
                          matchesSearch(book.author, query, useRegex, isCase) ||
                          matchesSearch(book.tag, query, useRegex, isCase);
-
       const tagMatch = tagFilter === 'All' || (book.tag || '').toLowerCase() === tagFilter.toLowerCase();
       const statusMatch = statusFilter === 'All' || (book.status || '').toLowerCase() === statusFilter.toLowerCase();
-
       return textMatch && tagMatch && statusMatch;
     });
 
-    // Sort
     filtered.sort((a, b) => {
       if (sortValue === 'title-asc') return a.title.localeCompare(b.title);
       if (sortValue === 'title-desc') return b.title.localeCompare(a.title);
@@ -619,61 +412,134 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (tableCountLabel) {
-      tableCountLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'book' : 'books'} in your collection`;
+      tableCountLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'book' : 'books'} in collection`;
     }
 
-    if (!catalogTableBody) return;
+    if (catalogTableBody) {
+      if (filtered.length === 0) {
+        catalogTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 32px; color: #6B7280;">
+              No books found matching your search.
+            </td>
+          </tr>
+        `;
+      } else {
+        let tableRowsHtml = '';
+        filtered.forEach(book => {
+          const isExpanded = expandedBookIds.has(book.id);
+          tableRowsHtml += `
+            <tr data-book-id="${book.id}">
+              <td><strong>${escapeHtml(book.title)}</strong></td>
+              <td>${escapeHtml(book.author)}</td>
+              <td>${book.pages}</td>
+              <td>${escapeHtml(book.tag || 'General')}</td>
+              <td>${escapeHtml(book.date || '-')}</td>
+              <td>
+                <button type="button" class="status-pill btn-toggle-status" data-id="${book.id}">
+                  ${escapeHtml(book.status || 'To Read')}
+                </button>
+              </td>
+              <td>
+                <button type="button" class="btn-view" data-id="${book.id}">${isExpanded ? 'Hide' : 'View'}</button>
+                <button type="button" class="btn-edit" data-id="${book.id}">Edit</button>
+                <button type="button" class="btn-delete" data-id="${book.id}">Delete</button>
+              </td>
+            </tr>
+          `;
 
-    if (filtered.length === 0) {
-      catalogTableBody.innerHTML = `
-        <tr>
-          <td colspan="7" style="text-align: center; padding: 32px; color: var(--text-muted);">
-            No books found matching your criteria.
-          </td>
-        </tr>
-      `;
-      return;
+          if (isExpanded) {
+            tableRowsHtml += `
+              <tr class="inline-detail-row" id="detail-row-${book.id}">
+                <td colspan="7">
+                  <div class="inline-book-detail">
+                    <div class="inline-cover-wrap">
+                      <img src="${book.coverImage || book.cover || './assets/midnight-library.jpg'}" alt="Cover" class="inline-cover-img">
+                    </div>
+                    <div class="inline-info">
+                      <h4>${escapeHtml(book.title)}</h4>
+                      <div class="inline-meta">by ${escapeHtml(book.author)} • ${book.pages} pages • ${escapeHtml(book.tag || 'General')}</div>
+                      <div class="inline-meta">Added: ${escapeHtml(book.date || '-')} • Status: <strong>${escapeHtml(book.status)}</strong></div>
+                      ${book.quote ? `<p class="inline-notes">&ldquo;${escapeHtml(book.quote)}&rdquo;</p>` : ''}
+                    </div>
+                    <button type="button" class="btn-secondary btn-sm btn-close-detail" data-id="${book.id}">Close</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }
+        });
+        catalogTableBody.innerHTML = tableRowsHtml;
+      }
     }
 
-    catalogTableBody.innerHTML = filtered.map(book => {
-      const statusClass = getStatusClass(book.status);
-      return `
-      <tr>
-        <td><strong>${escapeHtml(book.title)}</strong></td>
-        <td>${escapeHtml(book.author)}</td>
-        <td>${book.pages}</td>
-        <td>${escapeHtml(book.tag || 'General')}</td>
-        <td>${escapeHtml(book.date || '-')}</td>
-        <td>
-          <button type="button" class="btn-toggle-status status-pill ${statusClass}" data-id="${book.id}" title="Click to cycle status: To Read → Reading → Read">
-            ${escapeHtml(book.status || 'To Read')}
-          </button>
-        </td>
-        <td>
-          <button type="button" class="btn-edit" data-id="${book.id}">Edit</button>
-          <button type="button" class="btn-delete" data-id="${book.id}">Delete</button>
-        </td>
-      </tr>
-      `;
-    }).join('');
+    if (mobileBooksContainer) {
+      if (filtered.length === 0) {
+        mobileBooksContainer.innerHTML = `<div style="text-align: center; padding: 24px; color: #6B7280; background: #FFF; border-radius: 8px;">No books found.</div>`;
+      } else {
+        mobileBooksContainer.innerHTML = filtered.map(book => {
+          const isExpanded = expandedBookIds.has(book.id);
+          return `
+            <div class="mobile-book-card" data-book-id="${book.id}">
+              <div class="mobile-book-card-header">
+                <div>
+                  <div class="mobile-book-card-title">${escapeHtml(book.title)}</div>
+                  <div class="mobile-book-card-author">by ${escapeHtml(book.author)}</div>
+                </div>
+                <button type="button" class="status-pill btn-toggle-status" data-id="${book.id}">${escapeHtml(book.status)}</button>
+              </div>
+              <div style="font-size: 0.85rem; color: #6B7280;">${book.pages} pages • ${escapeHtml(book.tag || 'General')}</div>
+              ${isExpanded ? `
+                <div class="mobile-expanded-detail" style="padding-top: 12px; border-top: 1px solid #E5E7EB;">
+                  <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 8px;">
+                    <img src="${book.coverImage || book.cover || './assets/midnight-library.jpg'}" style="width: 60px; height: 90px; border-radius: 4px; object-fit: cover;">
+                    <div style="font-size: 0.88rem; color: #374151;">
+                      <p>Date Added: ${escapeHtml(book.date || '-')}</p>
+                      ${book.quote ? `<p style="font-style: italic; margin-top: 6px; color: #4B5563;">&ldquo;${escapeHtml(book.quote)}&rdquo;</p>` : ''}
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+              <div class="mobile-book-card-footer">
+                <button type="button" class="btn-view" data-id="${book.id}">${isExpanded ? 'Hide' : 'View'}</button>
+                <div>
+                  <button type="button" class="btn-edit" data-id="${book.id}">Edit</button>
+                  <button type="button" class="btn-delete" data-id="${book.id}">Delete</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
 
-    // Attach Status Toggle Listeners
-    catalogTableBody.querySelectorAll('.btn-toggle-status').forEach(btn => {
+    document.querySelectorAll('.btn-view, .btn-close-detail').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = parseInt(e.currentTarget.dataset.id, 10);
+        if (expandedBookIds.has(id)) {
+          expandedBookIds.delete(id);
+        } else {
+          expandedBookIds.add(id);
+        }
+        renderCatalog();
+      });
+    });
+
+    document.querySelectorAll('.btn-toggle-status').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.currentTarget.dataset.id, 10);
         toggleBookStatus(id);
       });
     });
 
-    // Attach Edit & Delete Listeners
-    catalogTableBody.querySelectorAll('.btn-edit').forEach(btn => {
+    document.querySelectorAll('.btn-edit').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.currentTarget.dataset.id, 10);
-        editBook(id);
+        startEditBook(id);
       });
     });
 
-    catalogTableBody.querySelectorAll('.btn-delete').forEach(btn => {
+    document.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = parseInt(e.currentTarget.dataset.id, 10);
         deleteBook(id);
@@ -681,51 +547,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 9. Add / Edit Book Functions ---
-  function resetBookForm() {
-    if (!bookForm) return;
-    bookForm.reset();
-    currentUploadedCover = '';
-    if (formCoverFile) formCoverFile.value = '';
-    if (coverPreviewImg) coverPreviewImg.src = '';
-    if (coverPreviewRow) coverPreviewRow.style.display = 'none';
-    if (formIsFavorite) formIsFavorite.checked = false;
-    if (editingBookIdInput) editingBookIdInput.value = '';
-    if (formViewTitle) formViewTitle.textContent = 'Add Book';
-    if (formDate) formDate.value = new Date().toISOString().split('T')[0];
-    if (formStatus) formStatus.value = 'To Read';
+  function toggleBookStatus(bookId) {
+    const book = books.find(b => b.id === bookId);
+    if (!book) return;
+    const statusCycle = ['To Read', 'Reading', 'Read'];
+    const currentIndex = statusCycle.indexOf(book.status);
+    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+    book.status = nextStatus;
+    persistData();
+    renderCatalog();
+    renderDashboard();
+    showToast(`Status updated to "${nextStatus}"`);
   }
 
-  function editBook(id) {
-    const book = books.find(b => b.id === id);
+  function deleteBook(bookId) {
+    const book = books.find(b => b.id === bookId);
     if (!book) return;
-
-    if (editingBookIdInput) editingBookIdInput.value = book.id;
-    if (formTitle) formTitle.value = book.title;
-    if (formAuthor) formAuthor.value = book.author;
-    if (formPages) formPages.value = book.pages;
-    if (formTag) formTag.value = book.tag;
-    if (formDate) formDate.value = book.date;
-    if (formStatus) formStatus.value = book.status;
-    currentUploadedCover = book.coverImage || '';
-    if (currentUploadedCover && coverPreviewImg && coverPreviewRow) {
-      coverPreviewImg.src = currentUploadedCover;
-      coverPreviewRow.style.display = 'flex';
-    } else if (coverPreviewRow) {
-      coverPreviewRow.style.display = 'none';
-    }
-    if (formIsFavorite) formIsFavorite.checked = !!book.isFavorite;
-
-    if (formViewTitle) formViewTitle.textContent = 'Edit Book';
-    switchView('add-book');
-  }
-
-  function deleteBook(id) {
-    const book = books.find(b => b.id === id);
-    if (!book) return;
-
-    if (confirm(`Are you sure you want to delete "${book.title}" from your vault?`)) {
-      books = books.filter(b => b.id !== id);
+    if (confirm(`Are you sure you want to delete "${book.title}"?`)) {
+      books = books.filter(b => b.id !== bookId);
+      expandedBookIds.delete(bookId);
       persistData();
       renderCatalog();
       renderDashboard();
@@ -733,7 +573,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Form submit handler
+  function startEditBook(bookId) {
+    const book = books.find(b => b.id === bookId);
+    if (!book) return;
+
+    if (formViewTitle) formViewTitle.textContent = `Edit Book`;
+    if (editingBookIdInput) editingBookIdInput.value = book.id;
+    if (formTitle) formTitle.value = book.title;
+    if (formAuthor) formAuthor.value = book.author;
+    if (formPages) formPages.value = book.pages;
+    if (formTag) formTag.value = book.tag || '';
+    if (formDate) formDate.value = book.date || '';
+    if (formStatus) formStatus.value = book.status || 'To Read';
+    if (formIsFavorite) formIsFavorite.checked = !!book.isFavorite;
+
+    currentUploadedCover = book.coverImage || book.cover || '';
+    if (currentUploadedCover && coverPreviewImg && coverPreviewRow) {
+      coverPreviewImg.src = currentUploadedCover;
+      coverPreviewRow.style.display = 'flex';
+    } else if (coverPreviewRow) {
+      coverPreviewRow.style.display = 'none';
+    }
+
+    switchView('add-book');
+  }
+
+  function resetBookForm() {
+    if (formViewTitle) formViewTitle.textContent = `Add Book`;
+    if (editingBookIdInput) editingBookIdInput.value = '';
+    if (bookForm) bookForm.reset();
+    if (formDate) {
+      formDate.value = new Date().toISOString().split('T')[0];
+    }
+    currentUploadedCover = '';
+    if (coverPreviewRow) coverPreviewRow.style.display = 'none';
+    if (coverPreviewImg) coverPreviewImg.src = '';
+  }
+
   if (bookForm) {
     bookForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -752,14 +628,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (editId) {
-        // Update existing book
         const index = books.findIndex(b => b.id === editId);
         if (index !== -1) {
-          books[index] = { ...books[index], title, author, pages, tag, date, status, coverImage: currentUploadedCover, isFavorite: formIsFavorite ? formIsFavorite.checked : false };
+          books[index] = {
+            ...books[index],
+            title,
+            author,
+            pages,
+            tag,
+            date,
+            status,
+            coverImage: currentUploadedCover,
+            isFavorite: formIsFavorite ? formIsFavorite.checked : false
+          };
           showToast(`Updated "${title}"`);
         }
       } else {
-        // Create new book
         const newBook = {
           id: Date.now(),
           title,
@@ -781,19 +665,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 10. Settings & Preferences Handlers ---
   if (settingsForm) {
-    prefBookTarget.value = readingTarget;
+    if (prefReaderName) prefReaderName.value = readerName;
+    if (prefDefaultView) prefDefaultView.value = defaultViewSetting;
 
     settingsForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      readingTarget = parseInt(prefBookTarget.value, 10) || 50;
+      readerName = prefReaderName ? prefReaderName.value.trim() || 'Lilian' : 'Lilian';
+      defaultViewSetting = prefDefaultView ? prefDefaultView.value : 'home';
       persistData();
-      showToast('Reading preferences saved.');
+      showToast('Settings saved successfully.');
     });
   }
 
-  // Export JSON
+  if (btnResetLibrary) {
+    btnResetLibrary.addEventListener('click', () => {
+      if (confirm('Reset your collection back to the default library?')) {
+        books = [...defaultBooks];
+        expandedBookIds.clear();
+        persistData();
+        renderDashboard();
+        renderCatalog();
+        showToast('Library reset to default books.');
+      }
+    });
+  }
+
   if (btnExportJson) {
     btnExportJson.addEventListener('click', () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(books, null, 2));
@@ -807,7 +704,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Import JSON
   if (btnImportTrigger && importFileInput) {
     btnImportTrigger.addEventListener('click', () => {
       importFileInput.click();
@@ -838,34 +734,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 11. Search & Filter Input Listeners ---
-  [dashSearchInput, dashRegexCheck, dashCaseCheck].forEach(el => {
-    if (el) el.addEventListener('input', renderDashboard);
-  });
-
   [catalogSearchInput, catalogRegexCheck, catalogCaseCheck, catalogSort, catalogFilterTag, catalogFilterStatus].forEach(el => {
     if (el) el.addEventListener('input', renderCatalog);
   });
 
-  genreCheckboxes.forEach(cb => cb.addEventListener('change', renderDashboard));
-  statusCheckboxes.forEach(cb => cb.addEventListener('change', renderDashboard));
-
-  // --- Initial Render ---
   updateHomeHeroStats();
   renderDashboard();
   renderCatalog();
 
-  // Support direct hash navigation (e.g. #dashboard, #add-book, #catalog)
   const initialHash = window.location.hash.replace('#', '');
-  if (initialHash && ['home', 'dashboard', 'catalog', 'add-book', 'settings'].includes(initialHash)) {
+  if (initialHash && ['home', 'dashboard', 'catalog', 'add-book', 'settings', 'about'].includes(initialHash)) {
     switchView(initialHash, false);
     history.replaceState({ view: initialHash }, '', '#' + initialHash);
+  } else if (defaultViewSetting && defaultViewSetting !== 'home') {
+    switchView(defaultViewSetting, false);
+    history.replaceState({ view: defaultViewSetting }, '', '#' + defaultViewSetting);
   } else {
     history.replaceState({ view: 'home' }, '', window.location.pathname + window.location.search);
   }
 });
 
-// Helper HTML escaping for safe injection
 function escapeHtml(str) {
   if (!str) return '';
   const div = document.createElement('div');
