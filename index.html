@@ -107,8 +107,8 @@
             <span class="bar"></span>
             <span class="bar"></span>
           </button>
-          <div class="brand" id="brand-home-link" title="Return to Home" style="cursor: pointer;">
-            <span class="brand-title">Book & Notes Vault</span>
+          <div class="brand topbar-brand" id="brand-home-link" title="Return to Home" style="cursor: pointer;">
+            <span class="brand-title topbar-brand-title">Book & Notes Vault</span>
           </div>
           <div class="breadcrumbs" id="breadcrumb-text">
             <span class="sep">/</span> <button type="button" class="breadcrumb-home-btn" id="breadcrumb-home-btn">Home</button>
@@ -271,8 +271,8 @@
                   <th>Pages</th>
                   <th>Tag</th>
                   <th>Date Added</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th class="th-status">Status</th>
+                  <th class="th-actions">Actions</th>
                 </tr>
               </thead>
               <tbody id="catalog-table-body">
@@ -332,10 +332,21 @@
               </div>
 
               <div class="form-field form-field-full">
-                <label class="form-label">Book Cover Image (Upload)</label>
+                <label for="form-synopsis" class="form-label">Synopsis</label>
+                <textarea id="form-synopsis" class="form-input" rows="3" style="resize: vertical; font-family: inherit;" placeholder="A brief summary or plot synopsis of the book..."></textarea>
+              </div>
+
+              <div class="form-field form-field-full">
+                <label for="form-quote" class="form-label">Favorite Quote or Note</label>
+                <textarea id="form-quote" class="form-input" rows="2" style="resize: vertical; font-family: inherit;" placeholder="A memorable quote, key takeaway, or reflection..."></textarea>
+              </div>
+
+              <div class="form-field form-field-full">
+                <label class="form-label">Book Cover Image</label>
+                <input type="text" id="form-cover-url" class="form-input" placeholder="Paste image web URL (or upload from device below)" style="margin-bottom: 8px;">
                 <div class="cover-upload-box">
                   <input type="file" id="form-cover-file" class="form-file-input" accept="image/*">
-                  <div class="cover-upload-info">Upload a book cover from your device</div>
+                  <div class="cover-upload-info">Or choose an image file from your device</div>
                   <div class="cover-preview-row" id="cover-preview-row" style="display: none;">
                     <img id="cover-preview-img" src="" alt="Cover Preview" class="cover-thumb">
                     <button type="button" class="btn btn-secondary btn-sm" id="btn-remove-cover">Remove Image</button>
@@ -345,7 +356,7 @@
 
               <div class="form-field form-field-full">
                 <label class="checkbox-label">
-                  <input type="checkbox" id="form-is-favorite"> Feature this book as Spotlight Read
+                  <input type="checkbox" id="form-is-favorite"> Feature this book as Spotlight Read on Home
                 </label>
               </div>
             </div>
@@ -358,38 +369,29 @@
         </div>
       </section>
 
-      <!-- VIEW 4: SETTINGS -->
+      <!-- VIEW 4: SETTINGS / READING TARGET -->
       <section class="view-section" id="view-settings">
         <div class="view-header">
           <h1 class="header-title">Settings</h1>
+          <p class="header-subtitle">Personal reading goal and reader profile.</p>
         </div>
 
-        <div class="settings-grid">
+        <div class="settings-grid" style="grid-template-columns: 1fr; max-width: 580px;">
           <div class="card settings-card">
-            <h3 class="settings-card-title">General Preferences</h3>
+            <h3 class="settings-card-title">Reading Target</h3>
             <form id="settings-form">
               <div class="form-field" style="margin-bottom: 16px;">
-                <label for="pref-reader-name" class="form-label">Reader Name</label>
-                <input type="text" id="pref-reader-name" class="form-input" value="Lilian">
+                <label for="pref-reader-goal" class="form-label">Annual Reading Goal (Number of Books)</label>
+                <input type="number" id="pref-reader-goal" class="form-input" min="1" max="500" value="25">
               </div>
 
               <div class="form-field" style="margin-bottom: 20px;">
-                <label for="pref-default-view" class="form-label">Default Page on Start</label>
-                <select id="pref-default-view" class="form-select">
-                  <option value="home">Home</option>
-                  <option value="catalog">My Library</option>
-                  <option value="dashboard">Dashboard</option>
-                </select>
+                <label for="pref-reader-motto" class="form-label">Personal Reading Note</label>
+                <input type="text" id="pref-reader-motto" class="form-input" value="A quiet space for every book.">
               </div>
 
-              <button type="submit" class="btn btn-primary">Save Settings</button>
+              <button type="submit" class="btn btn-primary">Save Target</button>
             </form>
-          </div>
-
-          <div class="card settings-card">
-            <h3 class="settings-card-title">Manage Collection Data</h3>
-            <p class="settings-card-desc">Need to reset your collection back to the default library?</p>
-            <button type="button" class="btn btn-secondary" id="btn-reset-library" style="margin-top: 14px;">Reset to Default Books</button>
           </div>
         </div>
       </section>

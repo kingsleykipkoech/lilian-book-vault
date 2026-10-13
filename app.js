@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
       date: "2026-10-08",
       status: "Reading",
       cover: "./assets/midnight-library.jpg",
+      coverImage: "./assets/midnight-library.jpg",
+      synopsis: "Nora Seed finds herself in a magical library between life and death. With each book offering an alternate reality of choices she could have made, Nora explores different careers, relationships, and philosophies to uncover what truly makes life worth living.",
       quote: "Between life and death there is a library where shelves go on forever. Every book provides a chance to try another life."
     },
     {
@@ -21,13 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
       date: "2026-10-10",
       status: "To Read",
       cover: "./assets/midnight-library.jpg",
+      coverImage: "./assets/midnight-library.jpg",
+      synopsis: "A comprehensive tour of computer systems from the programmer's perspective, bridging high-level languages with machine execution, memory hierarchies, processor pipelines, and concurrent system architecture.",
       quote: "A programmer's perspective on computer architecture, memory hierarchy, and hardware-software interface."
     }
   ];
 
   let books = JSON.parse(localStorage.getItem('lilian_vault_books')) || defaultBooks;
-  let readerName = localStorage.getItem('lilian_reader_name') || 'Lilian';
-  let defaultViewSetting = localStorage.getItem('lilian_default_view') || 'home';
+  // Ensure default books have synopses if loaded from prior localStorage
+  if (books[0] && !books[0].synopsis && books[0].title === 'The Midnight Library') {
+    books[0].synopsis = defaultBooks[0].synopsis;
+  }
+  if (books[1] && !books[1].synopsis && books[1].title.includes('Computer Systems')) {
+    books[1].synopsis = defaultBooks[1].synopsis;
+  }
+
+  let readerGoal = parseInt(localStorage.getItem('lilian_reader_goal'), 10) || 25;
+  let readerMotto = localStorage.getItem('lilian_reader_motto') || 'A quiet space for every book.';
 
   let currentView = 'home';
   let expandedBookIds = new Set();
@@ -68,6 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const formTag = document.getElementById('form-tag');
   const formDate = document.getElementById('form-date');
   const formStatus = document.getElementById('form-status');
+  const formSynopsis = document.getElementById('form-synopsis');
+  const formQuote = document.getElementById('form-quote');
+  const formCoverUrl = document.getElementById('form-cover-url');
   const btnCancelForm = document.getElementById('btn-cancel-form');
   const formCoverFile = document.getElementById('form-cover-file');
   const coverPreviewRow = document.getElementById('cover-preview-row');
@@ -77,13 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentUploadedCover = '';
 
   const settingsForm = document.getElementById('settings-form');
-  const prefReaderName = document.getElementById('pref-reader-name');
-  const prefDefaultView = document.getElementById('pref-default-view');
-  const btnResetLibrary = document.getElementById('btn-reset-library');
+  const prefReaderGoal = document.getElementById('pref-reader-goal');
+  const prefReaderMotto = document.getElementById('pref-reader-motto');
 
   const btnExportJson = document.getElementById('btn-export-json');
   const btnImportTrigger = document.getElementById('btn-import-trigger');
-  const importFileInput = document.getElementById('import-file-input');
+  const importFileInput = document.getElementById('import-json-file');
   const toast = document.getElementById('toast');
 
   if (formDate) {
@@ -262,17 +276,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const spotlightTitle = document.getElementById('home-spotlight-title');
     const spotlightAuthor = document.getElementById('home-spotlight-author');
     const spotlightQuote = document.getElementById('home-spotlight-quote');
+    const spotlightSynopsis = document.getElementById('home-spotlight-synopsis');
     const spotlightImg = document.getElementById('home-spotlight-img');
+    const spotlightTag = document.getElementById('home-spotlight-tag');
 
-    const activeRead = books.find(b => b.status === 'Reading') || books[0];
+    const activeRead = books.find(b => b.status === 'Reading') || books.find(b => b.isFavorite) || books[0];
     if (activeRead && spotlightTitle) {
       spotlightTitle.textContent = activeRead.title;
       if (spotlightAuthor) spotlightAuthor.textContent = `by ${activeRead.author} • ${activeRead.tag || 'General'}`;
-      if (activeRead.quote && spotlightQuote) {
-        spotlightQuote.textContent = `"${activeRead.quote}"`;
+      if (spotlightTag) {
+        spotlightTag.textContent = activeRead.status === 'Reading' ? 'Currently Reading' : 'Spotlight Book';
       }
-      if (activeRead.cover && spotlightImg) {
-        spotlightImg.src = activeRead.cover;
+      const synopsisText = activeRead.synopsis || activeRead.quote || 'No synopsis added yet.';
+      if (spotlightSynopsis) {
+        spotlightSynopsis.textContent = synopsisText;
+      } else if (spotlightQuote) {
+        spotlightQuote.textContent = `"${synopsisText}"`;
+      }
+      const coverSrc = activeRead.coverImage || activeRead.cover || './assets/midnight-library.jpg';
+      if (spotlightImg) {
+        spotlightImg.src = coverSrc;
       }
     }
   }
@@ -314,8 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function persistData() {
     localStorage.setItem('lilian_vault_books', JSON.stringify(books));
-    localStorage.setItem('lilian_reader_name', readerName);
-    localStorage.setItem('lilian_default_view', defaultViewSetting);
+    localStorage.setItem('lilian_reader_goal', readerGoal);
+    localStorage.setItem('lilian_reader_motto', readerMotto);
     updateHomeHeroStats();
   }
 
@@ -435,15 +458,17 @@ document.addEventListener('DOMContentLoaded', () => {
               <td>${book.pages}</td>
               <td>${escapeHtml(book.tag || 'General')}</td>
               <td>${escapeHtml(book.date || '-')}</td>
-              <td>
-                <button type="button" class="status-pill btn-toggle-status" data-id="${book.id}">
+              <td class="status-cell">
+                <button type="button" class="status-pill btn-toggle-status" data-id="${book.id}" title="Click to cycle status">
                   ${escapeHtml(book.status || 'To Read')}
                 </button>
               </td>
-              <td>
-                <button type="button" class="btn-view" data-id="${book.id}">${isExpanded ? 'Hide' : 'View'}</button>
-                <button type="button" class="btn-edit" data-id="${book.id}">Edit</button>
-                <button type="button" class="btn-delete" data-id="${book.id}">Delete</button>
+              <td class="actions-cell">
+                <div class="actions-group">
+                  <button type="button" class="btn-action btn-view" data-id="${book.id}">${isExpanded ? 'Hide' : 'View'}</button>
+                  <button type="button" class="btn-action btn-edit" data-id="${book.id}">Edit</button>
+                  <button type="button" class="btn-action btn-delete" data-id="${book.id}">Delete</button>
+                </div>
               </td>
             </tr>
           `;
@@ -460,9 +485,20 @@ document.addEventListener('DOMContentLoaded', () => {
                       <h4>${escapeHtml(book.title)}</h4>
                       <div class="inline-meta">by ${escapeHtml(book.author)} • ${book.pages} pages • ${escapeHtml(book.tag || 'General')}</div>
                       <div class="inline-meta">Added: ${escapeHtml(book.date || '-')} • Status: <strong>${escapeHtml(book.status)}</strong></div>
-                      ${book.quote ? `<p class="inline-notes">&ldquo;${escapeHtml(book.quote)}&rdquo;</p>` : ''}
+                      
+                      <div class="inline-synopsis-box">
+                        <span class="inline-label">Synopsis</span>
+                        <p>${escapeHtml(book.synopsis || 'No synopsis added yet for this book.')}</p>
+                      </div>
+
+                      ${book.quote ? `
+                        <div class="inline-quote-box">
+                          <span class="inline-label">Favorite Quote or Note</span>
+                          <p>&ldquo;${escapeHtml(book.quote)}&rdquo;</p>
+                        </div>
+                      ` : ''}
                     </div>
-                    <button type="button" class="btn-secondary btn-sm btn-close-detail" data-id="${book.id}">Close</button>
+                    <button type="button" class="btn-action btn-close-detail" data-id="${book.id}">Close</button>
                   </div>
                 </td>
               </tr>
@@ -488,23 +524,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <button type="button" class="status-pill btn-toggle-status" data-id="${book.id}">${escapeHtml(book.status)}</button>
               </div>
-              <div style="font-size: 0.85rem; color: #6B7280;">${book.pages} pages • ${escapeHtml(book.tag || 'General')}</div>
+              <div style="font-size: 0.85rem; color: #4B5563;">${book.pages} pages • ${escapeHtml(book.tag || 'General')}</div>
               ${isExpanded ? `
-                <div class="mobile-expanded-detail" style="padding-top: 12px; border-top: 1px solid #E5E7EB;">
-                  <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 8px;">
-                    <img src="${book.coverImage || book.cover || './assets/midnight-library.jpg'}" style="width: 60px; height: 90px; border-radius: 4px; object-fit: cover;">
-                    <div style="font-size: 0.88rem; color: #374151;">
-                      <p>Date Added: ${escapeHtml(book.date || '-')}</p>
-                      ${book.quote ? `<p style="font-style: italic; margin-top: 6px; color: #4B5563;">&ldquo;${escapeHtml(book.quote)}&rdquo;</p>` : ''}
+                <div class="mobile-expanded-detail" style="padding-top: 14px; border-top: 1px solid #E5E7EB; margin-top: 8px;">
+                  <div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px;">
+                    <img src="${book.coverImage || book.cover || './assets/midnight-library.jpg'}" style="width: 70px; height: 105px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
+                    <div style="font-size: 0.88rem; color: #1F2937; flex: 1;">
+                      <p style="margin-bottom: 4px;"><strong>Added:</strong> ${escapeHtml(book.date || '-')}</p>
+                      <p style="margin-bottom: 4px;"><strong>Status:</strong> ${escapeHtml(book.status)}</p>
                     </div>
                   </div>
+                  <div class="inline-synopsis-box" style="margin-bottom: 8px;">
+                    <span class="inline-label">Synopsis</span>
+                    <p style="font-size: 0.88rem; line-height: 1.5; color: #374151;">${escapeHtml(book.synopsis || 'No synopsis added yet for this book.')}</p>
+                  </div>
+                  ${book.quote ? `
+                    <div class="inline-quote-box">
+                      <span class="inline-label">Favorite Quote or Note</span>
+                      <p style="font-size: 0.88rem; font-style: italic; color: #4B5563;">&ldquo;${escapeHtml(book.quote)}&rdquo;</p>
+                    </div>
+                  ` : ''}
                 </div>
               ` : ''}
               <div class="mobile-book-card-footer">
-                <button type="button" class="btn-view" data-id="${book.id}">${isExpanded ? 'Hide' : 'View'}</button>
-                <div>
-                  <button type="button" class="btn-edit" data-id="${book.id}">Edit</button>
-                  <button type="button" class="btn-delete" data-id="${book.id}">Delete</button>
+                <button type="button" class="btn-action btn-view" data-id="${book.id}">${isExpanded ? 'Hide' : 'View'}</button>
+                <div class="actions-group">
+                  <button type="button" class="btn-action btn-edit" data-id="${book.id}">Edit</button>
+                  <button type="button" class="btn-action btn-delete" data-id="${book.id}">Delete</button>
                 </div>
               </div>
             </div>
@@ -585,9 +631,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formTag) formTag.value = book.tag || '';
     if (formDate) formDate.value = book.date || '';
     if (formStatus) formStatus.value = book.status || 'To Read';
+    if (formSynopsis) formSynopsis.value = book.synopsis || '';
+    if (formQuote) formQuote.value = book.quote || '';
     if (formIsFavorite) formIsFavorite.checked = !!book.isFavorite;
 
     currentUploadedCover = book.coverImage || book.cover || '';
+    if (formCoverUrl) {
+      formCoverUrl.value = (currentUploadedCover && !currentUploadedCover.startsWith('data:')) ? currentUploadedCover : '';
+    }
     if (currentUploadedCover && coverPreviewImg && coverPreviewRow) {
       coverPreviewImg.src = currentUploadedCover;
       coverPreviewRow.style.display = 'flex';
@@ -605,6 +656,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formDate) {
       formDate.value = new Date().toISOString().split('T')[0];
     }
+    if (formSynopsis) formSynopsis.value = '';
+    if (formQuote) formQuote.value = '';
+    if (formCoverUrl) formCoverUrl.value = '';
     currentUploadedCover = '';
     if (coverPreviewRow) coverPreviewRow.style.display = 'none';
     if (coverPreviewImg) coverPreviewImg.src = '';
@@ -620,6 +674,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const tag = formTag.value.trim() || 'General';
       const date = formDate.value || new Date().toISOString().split('T')[0];
       const status = formStatus.value;
+      const synopsis = formSynopsis ? formSynopsis.value.trim() : '';
+      const quote = formQuote ? formQuote.value.trim() : '';
+      const coverUrl = formCoverUrl ? formCoverUrl.value.trim() : '';
       const editId = editingBookIdInput.value ? parseInt(editingBookIdInput.value, 10) : null;
 
       if (!title || !author) {
@@ -630,6 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (editId) {
         const index = books.findIndex(b => b.id === editId);
         if (index !== -1) {
+          const finalCover = currentUploadedCover || coverUrl || books[index].coverImage || books[index].cover || './assets/midnight-library.jpg';
           books[index] = {
             ...books[index],
             title,
@@ -638,12 +696,16 @@ document.addEventListener('DOMContentLoaded', () => {
             tag,
             date,
             status,
-            coverImage: currentUploadedCover,
+            synopsis: synopsis || books[index].synopsis || '',
+            quote: quote || books[index].quote || '',
+            cover: finalCover,
+            coverImage: finalCover,
             isFavorite: formIsFavorite ? formIsFavorite.checked : false
           };
           showToast(`Updated "${title}"`);
         }
       } else {
+        const finalCover = currentUploadedCover || coverUrl || './assets/midnight-library.jpg';
         const newBook = {
           id: Date.now(),
           title,
@@ -652,7 +714,10 @@ document.addEventListener('DOMContentLoaded', () => {
           tag,
           date,
           status,
-          coverImage: currentUploadedCover,
+          synopsis,
+          quote,
+          cover: finalCover,
+          coverImage: finalCover,
           isFavorite: formIsFavorite ? formIsFavorite.checked : false
         };
         books.unshift(newBook);
@@ -666,28 +731,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (settingsForm) {
-    if (prefReaderName) prefReaderName.value = readerName;
-    if (prefDefaultView) prefDefaultView.value = defaultViewSetting;
+    if (prefReaderGoal) prefReaderGoal.value = readerGoal;
+    if (prefReaderMotto) prefReaderMotto.value = readerMotto;
 
     settingsForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      readerName = prefReaderName ? prefReaderName.value.trim() || 'Lilian' : 'Lilian';
-      defaultViewSetting = prefDefaultView ? prefDefaultView.value : 'home';
+      readerGoal = prefReaderGoal ? parseInt(prefReaderGoal.value, 10) || 25 : 25;
+      readerMotto = prefReaderMotto ? prefReaderMotto.value.trim() : 'A quiet space for every book.';
       persistData();
-      showToast('Settings saved successfully.');
-    });
-  }
-
-  if (btnResetLibrary) {
-    btnResetLibrary.addEventListener('click', () => {
-      if (confirm('Reset your collection back to the default library?')) {
-        books = [...defaultBooks];
-        expandedBookIds.clear();
-        persistData();
-        renderDashboard();
-        renderCatalog();
-        showToast('Library reset to default books.');
-      }
+      showToast('Reading target saved successfully.');
     });
   }
 
