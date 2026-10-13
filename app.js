@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
       tag: "Fiction",
       date: "2026-10-08",
       status: "Reading",
+      isFavorite: false,
       cover: "./assets/midnight-library.jpg",
       coverImage: "./assets/midnight-library.jpg",
-      synopsis: "Nora Seed finds herself in a magical library between life and death. With each book offering an alternate reality of choices she could have made, Nora explores different careers, relationships, and philosophies to uncover what truly makes life worth living.",
-      quote: "Between life and death there is a library where shelves go on forever. Every book provides a chance to try another life."
+      synopsis: "Between life and death there is a library where shelves go on forever. Nora Seed is given the chance to undo her regrets and explore the alternate lives she could have lived."
     },
     {
       id: 2,
@@ -22,21 +22,29 @@ document.addEventListener('DOMContentLoaded', () => {
       tag: "Systems",
       date: "2026-10-10",
       status: "To Read",
-      cover: "./assets/midnight-library.jpg",
-      coverImage: "./assets/midnight-library.jpg",
-      synopsis: "A comprehensive tour of computer systems from the programmer's perspective, bridging high-level languages with machine execution, memory hierarchies, processor pipelines, and concurrent system architecture.",
-      quote: "A programmer's perspective on computer architecture, memory hierarchy, and hardware-software interface."
+      isFavorite: true,
+      cover: "./assets/computer-systems.jpg",
+      coverImage: "./assets/computer-systems.jpg",
+      synopsis: "A programmer's perspective on computer architecture, memory hierarchy, machine-level code, and concurrent systems."
     }
   ];
 
   let books = JSON.parse(localStorage.getItem('lilian_vault_books')) || defaultBooks;
-  // Ensure default books have synopses if loaded from prior localStorage
-  if (books[0] && !books[0].synopsis && books[0].title === 'The Midnight Library') {
-    books[0].synopsis = defaultBooks[0].synopsis;
-  }
-  if (books[1] && !books[1].synopsis && books[1].title.includes('Computer Systems')) {
-    books[1].synopsis = defaultBooks[1].synopsis;
-  }
+  // Ensure default books have synopses and correct covers in existing localStorage
+  books.forEach(b => {
+    if (b.title && b.title.includes('Computer Systems')) {
+      b.cover = './assets/computer-systems.jpg';
+      b.coverImage = './assets/computer-systems.jpg';
+      if (!b.synopsis) {
+        b.synopsis = "A programmer's perspective on computer architecture, memory hierarchy, machine-level code, and concurrent systems.";
+      }
+    }
+    if (b.title && b.title.includes('Midnight Library')) {
+      if (!b.synopsis) {
+        b.synopsis = "Between life and death there is a library where shelves go on forever. Nora Seed is given the chance to undo her regrets and explore the alternate lives she could have lived.";
+      }
+    }
+  });
 
   let readerGoal = parseInt(localStorage.getItem('lilian_reader_goal'), 10) || 25;
   let readerMotto = localStorage.getItem('lilian_reader_motto') || 'A quiet space for every book.';
@@ -81,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const formDate = document.getElementById('form-date');
   const formStatus = document.getElementById('form-status');
   const formSynopsis = document.getElementById('form-synopsis');
-  const formQuote = document.getElementById('form-quote');
   const formCoverUrl = document.getElementById('form-cover-url');
   const btnCancelForm = document.getElementById('btn-cancel-form');
   const formCoverFile = document.getElementById('form-cover-file');
@@ -285,13 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
       spotlightTitle.textContent = activeRead.title;
       if (spotlightAuthor) spotlightAuthor.textContent = `by ${activeRead.author} • ${activeRead.tag || 'General'}`;
       if (spotlightTag) {
-        spotlightTag.textContent = activeRead.status === 'Reading' ? 'Currently Reading' : 'Spotlight Book';
+        spotlightTag.textContent = activeRead.status === 'Reading' ? 'Currently Reading' : (activeRead.isFavorite ? 'Favorite Book' : 'Featured Book');
       }
-      const synopsisText = activeRead.synopsis || activeRead.quote || 'No synopsis added yet.';
+      const synopsisText = activeRead.synopsis || 'No synopsis added yet.';
       if (spotlightSynopsis) {
         spotlightSynopsis.textContent = synopsisText;
       } else if (spotlightQuote) {
-        spotlightQuote.textContent = `"${synopsisText}"`;
+        spotlightQuote.textContent = synopsisText;
       }
       const coverSrc = activeRead.coverImage || activeRead.cover || './assets/midnight-library.jpg';
       if (spotlightImg) {
@@ -490,13 +497,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="inline-label">Synopsis</span>
                         <p>${escapeHtml(book.synopsis || 'No synopsis added yet for this book.')}</p>
                       </div>
-
-                      ${book.quote ? `
-                        <div class="inline-quote-box">
-                          <span class="inline-label">Favorite Quote or Note</span>
-                          <p>&ldquo;${escapeHtml(book.quote)}&rdquo;</p>
-                        </div>
-                      ` : ''}
                     </div>
                     <button type="button" class="btn-action btn-close-detail" data-id="${book.id}">Close</button>
                   </div>
@@ -538,12 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="inline-label">Synopsis</span>
                     <p style="font-size: 0.88rem; line-height: 1.5; color: #374151;">${escapeHtml(book.synopsis || 'No synopsis added yet for this book.')}</p>
                   </div>
-                  ${book.quote ? `
-                    <div class="inline-quote-box">
-                      <span class="inline-label">Favorite Quote or Note</span>
-                      <p style="font-size: 0.88rem; font-style: italic; color: #4B5563;">&ldquo;${escapeHtml(book.quote)}&rdquo;</p>
-                    </div>
-                  ` : ''}
                 </div>
               ` : ''}
               <div class="mobile-book-card-footer">
@@ -632,7 +626,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formDate) formDate.value = book.date || '';
     if (formStatus) formStatus.value = book.status || 'To Read';
     if (formSynopsis) formSynopsis.value = book.synopsis || '';
-    if (formQuote) formQuote.value = book.quote || '';
     if (formIsFavorite) formIsFavorite.checked = !!book.isFavorite;
 
     currentUploadedCover = book.coverImage || book.cover || '';
@@ -657,7 +650,6 @@ document.addEventListener('DOMContentLoaded', () => {
       formDate.value = new Date().toISOString().split('T')[0];
     }
     if (formSynopsis) formSynopsis.value = '';
-    if (formQuote) formQuote.value = '';
     if (formCoverUrl) formCoverUrl.value = '';
     currentUploadedCover = '';
     if (coverPreviewRow) coverPreviewRow.style.display = 'none';
@@ -675,7 +667,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const date = formDate.value || new Date().toISOString().split('T')[0];
       const status = formStatus.value;
       const synopsis = formSynopsis ? formSynopsis.value.trim() : '';
-      const quote = formQuote ? formQuote.value.trim() : '';
       const coverUrl = formCoverUrl ? formCoverUrl.value.trim() : '';
       const editId = editingBookIdInput.value ? parseInt(editingBookIdInput.value, 10) : null;
 
@@ -697,7 +688,6 @@ document.addEventListener('DOMContentLoaded', () => {
             date,
             status,
             synopsis: synopsis || books[index].synopsis || '',
-            quote: quote || books[index].quote || '',
             cover: finalCover,
             coverImage: finalCover,
             isFavorite: formIsFavorite ? formIsFavorite.checked : false
@@ -715,7 +705,6 @@ document.addEventListener('DOMContentLoaded', () => {
           date,
           status,
           synopsis,
-          quote,
           cover: finalCover,
           coverImage: finalCover,
           isFavorite: formIsFavorite ? formIsFavorite.checked : false

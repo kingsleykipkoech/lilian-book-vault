@@ -181,21 +181,16 @@
         </div>
 
         <div class="card favorite-book-card" id="favorite-book-card" style="margin-top: 24px;">
-          <div class="favorite-card-badge">FEATURED BOOK</div>
+          <div class="favorite-card-badge">FAVORITE BOOK</div>
           <div class="favorite-card-content">
-            <div class="favorite-cover-preview" id="favorite-cover-preview">
-              <div class="favorite-cloth-cover">
-                <span>FEATURED</span>
-              </div>
-            </div>
             <div class="favorite-card-details">
               <h2 class="favorite-book-title" id="favorite-book-title">The Midnight Library</h2>
               <div class="favorite-book-meta" id="favorite-book-author">by Matt Haig • 288 pages • Fiction</div>
-              <p class="favorite-book-quote" id="favorite-book-quote">
-                &ldquo;Between life and death there is a library, and within that library, the shelves go on forever.&rdquo;
+              <p class="favorite-book-quote" id="favorite-book-quote" style="font-style: normal; color: #475569; margin: 10px 0;">
+                Between life and death there is a library where shelves go on forever. Nora Seed is given the chance to undo her regrets and explore the alternate lives she could have lived.
               </p>
-              <div class="favorite-card-actions">
-                <button type="button" class="btn-toggle-status status-pill" id="favorite-book-badge">Currently Reading</button>
+              <div class="favorite-card-actions" style="margin-top: 14px;">
+                <button type="button" class="btn-toggle-status status-pill" id="favorite-book-badge">Favorite</button>
                 <button type="button" class="btn-link-action" id="fav-view-library-btn">View in Library &rarr;</button>
               </div>
             </div>
@@ -337,11 +332,6 @@
               </div>
 
               <div class="form-field form-field-full">
-                <label for="form-quote" class="form-label">Favorite Quote or Note</label>
-                <textarea id="form-quote" class="form-input" rows="2" style="resize: vertical; font-family: inherit;" placeholder="A memorable quote, key takeaway, or reflection..."></textarea>
-              </div>
-
-              <div class="form-field form-field-full">
                 <label class="form-label">Book Cover Image</label>
                 <input type="text" id="form-cover-url" class="form-input" placeholder="Paste image web URL (or upload from device below)" style="margin-bottom: 8px;">
                 <div class="cover-upload-box">
@@ -356,7 +346,7 @@
 
               <div class="form-field form-field-full">
                 <label class="checkbox-label">
-                  <input type="checkbox" id="form-is-favorite"> Feature this book as Spotlight Read on Home
+                  <input type="checkbox" id="form-is-favorite"> Mark as Favorite Book
                 </label>
               </div>
             </div>
